@@ -46,5 +46,8 @@ def users_page():
         users = cur.fetchall()
     return render_template("users.html", users=users)
 
+@app.get("/tutor")
+def tutor_page():
+    return render_template("tutor.html")
 # WSGI entrypoint
 app = app
