@@ -1,0 +1,34 @@
+<h2><%= thread.title %></h2>
+<p><strong>Course:</strong> <%= thread.course_title || 'N/A' %></p>
+<p><strong>Created by:</strong> <%= thread.creator_name %> on <%= new Date(thread.created_at).toLocaleString() %></p>
+<form action="/report/thread/<%= thread.id %>" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to report this thread?');">
+    <button type="submit" class="btn btn-sm btn-warning">Report Thread</button>
+</form>
+
+<hr>
+
+<h3>Posts</h3>
+<% if (posts.length > 0) { %>
+  <ul class="list-group mb-4">
+    <% posts.forEach(function(post) { %>
+      <li class="list-group-item mb-2">
+        <p><strong><%= post.poster_name %>:</strong></p>
+        <p><%= post.content %></p>
+        <small class="text-muted">Posted on <%= new Date(post.created_at).toLocaleString() %></small>
+        <form action="/report/post/<%= post.id %>" method="POST" class="d-inline-block ms-3" onsubmit="return confirm('Are you sure you want to report this post?');">
+            <button type="submit" class="btn btn-sm btn-warning">Report Post</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No posts in this thread yet.</p>
+<% } %>
+
+<h3>Reply</h3>
+<form action="/qa/threads/<%= thread.id %>/reply" method="POST">
+    <div class="form-group">
+        <textarea name="content" rows="5" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Post Reply</button>
+</form>

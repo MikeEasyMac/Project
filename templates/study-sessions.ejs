@@ -1,0 +1,39 @@
+<h2>My Study Sessions</h2>
+<a href="/study-sessions/add" class="btn btn-primary mb-3">Add New Study Session</a>
+
+<% if (studySessions.length > 0) { %>
+  <ul class="list-group">
+    <% studySessions.forEach(function(session) { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong><%= session.title %></strong>
+          <% if (session.assignment_title) { %>
+            (Assignment: <%= session.assignment_title %>)
+          <% } %>
+          <br>
+          <%= new Date(session.start_time).toLocaleString() %> - <%= new Date(session.end_time).toLocaleString() %>
+          <br>
+          Status: <%= session.status %>
+          <% if (session.notes) { %>
+            <br>Notes: <%= session.notes %>
+          <% } %>
+        </div>
+        <div>
+          <form action="/study-sessions/<%= session.id %>/status" method="POST" class="d-inline-block me-2">
+            <select name="status" onchange="this.form.submit()">
+              <option value="planned" <%= session.status === 'planned' ? 'selected' : '' %>>Planned</option>
+              <option value="done" <%= session.status === 'done' ? 'selected' : '' %>>Done</option>
+              <option value="skipped" <%= session.status === 'skipped' ? 'selected' : '' %>>Skipped</option>
+            </select>
+          </form>
+          <a href="/study-sessions/<%= session.id %>/edit" class="btn btn-sm btn-info me-2">Edit</a>
+          <form action="/study-sessions/<%= session.id %>/delete" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this study session?');">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No study sessions planned yet.</p>
+<% } %>

@@ -1,0 +1,21 @@
+<h2>Create New Q&A Thread</h2>
+<form action="/qa/threads" method="POST">
+    <div class="form-group">
+        <label for="title">Thread Title</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="course_id">Related Course (Optional)</label>
+        <select id="course_id" name="course_id">
+            <option value="">None</option>
+            <% courses.forEach(course => { %>
+                <option value="<%= course.id %>"><%= course.title %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="content">Initial Post Content</label>
+        <textarea id="content" name="content" rows="10" required></textarea>
+    </div>
+    <button type="submit">Create Thread</button>
+</form>

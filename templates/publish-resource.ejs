@@ -1,0 +1,32 @@
+<h2>Publish New Resource</h2>
+<form action="/resources" method="POST">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="course_id">Related Course (Optional)</label>
+        <select id="course_id" name="course_id">
+            <option value="">None</option>
+            <% courses.forEach(course => { %>
+                <option value="<%= course.id %>"><%= course.title %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="type">Resource Type</label>
+        <select id="type" name="type" required>
+            <option value="link">Link</option>
+            <option value="text">Text</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="content">Content (URL or Text)</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="tags">Tags (comma-separated)</label>
+        <input type="text" id="tags" name="tags">
+    </div>
+    <button type="submit">Publish Resource</button>
+</form>

@@ -1,0 +1,26 @@
+<h2>My Notifications</h2>
+
+<form action="/notifications/mark-all-read" method="POST" class="mb-3">
+    <button type="submit" class="btn btn-secondary btn-sm">Mark All As Read</button>
+</form>
+
+<% if (notifications.length > 0) { %>
+  <ul class="list-group">
+    <% notifications.forEach(function(notification) { %>
+      <li class="list-group-item <%= notification.is_read ? 'text-muted' : 'font-weight-bold' %>">
+        <%= notification.message %>
+        <% if (notification.link) { %>
+          <a href="<%= notification.link %>" class="btn btn-link btn-sm">View</a>
+        <% } %>
+        <small class="float-end"><%= new Date(notification.created_at).toLocaleString() %></small>
+        <% if (!notification.is_read) { %>
+          <form action="/notifications/<%= notification.id %>/mark-read" method="POST" class="d-inline-block ms-3">
+            <button type="submit" class="btn btn-light btn-sm">Mark as Read</button>
+          </form>
+        <% } %>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No notifications.</p>
+<% } %>

@@ -1,0 +1,33 @@
+<h2>Q&A Threads</h2>
+
+<form action="/qa" method="GET" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search threads by title" value="<%= search || '' %>">
+        <select name="course_id" class="form-select">
+            <option value="">All Courses</option>
+            <% courses.forEach(course => { %>
+                <option value="<%= course.id %>" <%= course_id == course.id ? 'selected' : '' %>><%= course.title %></option>
+            <% }); %>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<a href="/qa/create" class="btn btn-success mb-3">Create New Thread</a>
+
+<% if (qaThreads.length > 0) { %>
+  <ul class="list-group">
+    <% qaThreads.forEach(function(thread) { %>
+      <li class="list-group-item mb-3">
+        <h4><a href="/qa/threads/<%= thread.id %>"><%= thread.title %></a></h4>
+        <p><strong>Course:</strong> <%= thread.course_title || 'N/A' %></p>
+        <p><strong>Created by:</strong> <%= thread.creator_name %> on <%= new Date(thread.created_at).toLocaleString() %></p>
+        <form action="/report/thread/<%= thread.id %>" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to report this thread?');">
+            <button type="submit" class="btn btn-sm btn-warning">Report Thread</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No Q&A threads found.</p>
+<% } %>

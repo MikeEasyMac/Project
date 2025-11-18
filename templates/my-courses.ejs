@@ -1,0 +1,43 @@
+<h3 class="mb-3">My Enrolled Courses</h3>
+<a href="/assignments/add" class="btn btn-primary mb-3">Add New Assignment</a>
+<% if (courses.length > 0) { %>
+  <ul class="list-group">
+    <% courses.forEach(function(c) { %>
+      <li class="list-group-item">
+        <h4><%= c.code %> — <%= c.title %></h4>
+        <% if (c.assignments && c.assignments.length > 0) { %>
+          <h5>Assignments:</h5>
+          <ul class="list-group mb-3">
+            <% c.assignments.forEach(function(assignment) { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong><%= assignment.title %></strong> (Due: <%= assignment.due_date ? new Date(assignment.due_date).toLocaleString() : 'N/A' %>, Effort: <%= assignment.effort_estimate || 'N/A' %> mins) - Status: <%= assignment.status %>
+                </div>
+                <div>
+                  <form action="/assignments/<%= assignment.id %>/status" method="POST" class="d-inline-block me-2">
+                    <select name="status" onchange="this.form.submit()">
+                      <option value="pending" <%= assignment.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                      <option value="completed" <%= assignment.status === 'completed' ? 'selected' : '' %>>Completed</option>
+                      <option value="overdue" <%= assignment.status === 'overdue' ? 'selected' : '' %>>Overdue</option>
+                    </select>
+                  </form>
+                  <a href="/assignments/<%= assignment.id %>/edit" class="btn btn-sm btn-info me-2">Edit</a>
+                  <form action="/assignments/<%= assignment.id %>/generate-plan" method="POST" class="d-inline-block me-2">
+                    <button type="submit" class="btn btn-sm btn-success">Generate Study Plan</button>
+                  </form>
+                  <form action="/assignments/<%= assignment.id %>/delete" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p class="text-muted">No assignments for this course yet.</p>
+        <% } %>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">You are not enrolled in any courses yet.</p>
+<% } %>

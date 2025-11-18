@@ -1,0 +1,16 @@
+<h2>Available Tutors</h2>
+<% if (tutors.length > 0) { %>
+  <ul class="list-group">
+    <% tutors.forEach(function(tutor) { %>
+      <li class="list-group-item">
+        <h4><%= tutor.name %></h4>
+        <p><strong>Bio:</strong> <%= tutor.bio || 'N/A' %></p>
+        <p><strong>Subjects:</strong> <%= tutor.subjects ? JSON.parse(tutor.subjects).join(', ') : 'N/A' %></p>
+        <p><strong>Hourly Rate:</strong> $<%= tutor.hourly_rate || 'N/A' %></p>
+        <a href="/tutors/<%= tutor.id %>/request" class="btn btn-primary">Request Tutoring</a>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No tutors available at the moment.</p>
+<% } %>

@@ -1,0 +1,21 @@
+<h2>Tutor Profile</h2>
+<form action="/tutor/profile" method="POST">
+    <div class="form-group">
+        <label for="bio">Biography</label>
+        <textarea id="bio" name="bio" rows="5"><%= tutor ? tutor.bio || '' : '' %></textarea>
+    </div>
+    <div class="form-group">
+        <label for="subjects">Subjects (comma-separated)</label>
+        <input type="text" id="subjects" name="subjects" value="<%= tutor ? (tutor.subjects ? JSON.parse(tutor.subjects).join(', ') : '') : '' %>">
+    </div>
+    <div class="form-group">
+        <label for="hourly_rate">Hourly Rate</label>
+        <input type="number" id="hourly_rate" name="hourly_rate" step="0.01" value="<%= tutor ? tutor.hourly_rate || '' : '' %>">
+    </div>
+    <div class="form-group">
+        <label for="availability">Availability (JSON format)</label>
+        <textarea id="availability" name="availability" rows="5" placeholder='[{"day": "Monday", "start": "09:00", "end": "17:00"}]'><%= tutor ? (tutor.availability ? JSON.stringify(tutor.availability, null, 2) : '') : '' %></textarea>
+        <small class="form-text text-muted">Example: `[{"day": "Monday", "start": "09:00", "end": "17:00"}]`</small>
+    </div>
+    <button type="submit">Save Profile</button>
+</form>

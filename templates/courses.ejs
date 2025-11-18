@@ -1,0 +1,11 @@
+<h3 class="mb-3">Courses</h3>
+  <ul class="list-group">
+    <% courses.forEach(function(c) { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span><%= c.code %> — <%= c.title %></span>
+        <form action="/courses/<%= c.id %>/enroll" method="POST">
+          <button class="btn btn-primary btn-sm">Enroll</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
