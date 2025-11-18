@@ -1,6 +1,156 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Copilot - Select Tutor</title>
+    <link rel="stylesheet" href="../static/css/tutor.css">
+</head>
+<body>
 
-{% block content %}
-  <h3 class="mb-3">Tutor</h3>
-  <p class="lead">WIP</p>
-{% endblock %}
+    <!-- Top Banner -->
+    <header class="banner">
+        <div class="banner-left">
+            <button class="menu-btn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>Campus Copilot</h1>
+        </div>
+
+        <div class="banner-right">
+            <button class="icon-btn" aria-label="Notifications">🔔</button>
+            <button class="icon-btn profile-btn" aria-label="Profile">👤</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content selection-content">
+
+        <!-- Subjects -->
+        <section class="selection-column" id="subjects-column">
+            <h2 class="column-title">Subjects</h2>
+            <div class="selection-list" id="subjects-list">
+                <button class="selection-item">Mathematics</button>
+                <button class="selection-item">Physics</button>
+                <button class="selection-item">Chemistry</button>
+                <button class="selection-item">Biology</button>
+                <button class="selection-item">Computer Science</button>
+                <button class="selection-item">Economics</button>
+                <button class="selection-item">Psychology</button>
+                <button class="selection-item">History</button>
+                <button class="selection-item">English</button>
+                <button class="selection-item">Statistics</button>
+                <button class="selection-item">Philosophy</button>
+                <button class="selection-item">Engineering</button>
+            </div>
+        </section>
+
+        <!-- Tutors (collapsed initially) -->
+        <section class="selection-column collapsed" id="tutors-column">
+            <h2 class="column-title">Tutors</h2>
+            <p class="column-helper" id="tutors-helper">Select a subject first</p>
+            <div class="selection-list" id="tutors-list">
+                <button class="selection-item">Alex Johnson</button>
+                <button class="selection-item">Taylor Smith</button>
+                <button class="selection-item">Jordan Lee</button>
+                <button class="selection-item">Casey Nguyen</button>
+                <button class="selection-item">Riley Martinez</button>
+                <button class="selection-item">Morgan Patel</button>
+                <button class="selection-item">Sam Kim</button>
+                <button class="selection-item">Jamie Brown</button>
+                <button class="selection-item">Chris Garcia</button>
+                <button class="selection-item">Drew Wilson</button>
+                <button class="selection-item">Quinn Davis</button>
+                <button class="selection-item">Taylor Rivera</button>
+            </div>
+        </section>
+
+        <!-- Time Slots (collapsed initially) -->
+        <section class="selection-column collapsed" id="times-column">
+            <h2 class="column-title">Time Slots</h2>
+            <p class="column-helper" id="times-helper">Select a tutor first</p>
+            <div class="selection-list" id="times-list">
+                <button class="selection-item">09:00 - 09:30</button>
+                <button class="selection-item">09:30 - 10:00</button>
+                <button class="selection-item">10:00 - 10:30</button>
+                <button class="selection-item">10:30 - 11:00</button>
+                <button class="selection-item">11:00 - 11:30</button>
+                <button class="selection-item">11:30 - 12:00</button>
+                <button class="selection-item">13:00 - 13:30</button>
+                <button class="selection-item">13:30 - 14:00</button>
+                <button class="selection-item">14:00 - 14:30</button>
+                <button class="selection-item">14:30 - 15:00</button>
+                <button class="selection-item">15:00 - 15:30</button>
+                <button class="selection-item">15:30 - 16:00</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Submit Button -->
+    <div class="submit-container">
+        <button id="submit-btn" disabled>Submit</button>
+    </div>
+
+    <!-- JS: expand menus, highlight selection, enable submit -->
+    <script>
+        let selectedSubject = null;
+        let selectedTutor = null;
+        let selectedTime = null;
+
+        function updateSubmit() {
+            const btn = document.getElementById("submit-btn");
+            if (selectedSubject && selectedTutor && selectedTime) {
+                btn.disabled = false;
+                btn.classList.add("enabled");
+            } else {
+                btn.disabled = true;
+                btn.classList.remove("enabled");
+            }
+        }
+
+        function setupSelection(listId, nextColumnId, helperId, storeVar) {
+            const list = document.getElementById(listId);
+            if (!list) return;
+
+            list.addEventListener("click", function (event) {
+                const target = event.target;
+                if (!target.classList.contains("selection-item")) return;
+
+                // Clear previous selection
+                list.querySelectorAll(".selection-item.selected").forEach(item => {
+                    item.classList.remove("selected");
+                });
+
+                // Highlight current
+                target.classList.add("selected");
+
+                // Store the selection
+                if (storeVar === "subject") selectedSubject = target.textContent;
+                if (storeVar === "tutor") selectedTutor = target.textContent;
+                if (storeVar === "time") selectedTime = target.textContent;
+
+                // Expand next column
+                if (nextColumnId) {
+                    const nextColumn = document.getElementById(nextColumnId);
+                    if (nextColumn) nextColumn.classList.remove("collapsed");
+                }
+
+                // Hide helper text
+                if (helperId) {
+                    const helper = document.getElementById(helperId);
+                    if (helper) helper.style.display = "none";
+                }
+
+                updateSubmit();
+            });
+        }
+
+        setupSelection("subjects-list", "tutors-column", "tutors-helper", "subject");
+        setupSelection("tutors-list", "times-column", "times-helper", "tutor");
+        setupSelection("times-list", null, null, "time");
+    </script>
+
+</body>
+</html>
