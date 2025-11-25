@@ -1,10 +1,10 @@
--- core tables
+
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   name  VARCHAR(120) NOT NULL,
   password VARCHAR(255) NOT NULL,
-  role VARCHAR(50) NOT NULL DEFAULT 'student',
+  role VARCHAR(50) NOT NULL DEFAULT 'student', -- 'student', 'tutor', 'admin'
   avatar VARCHAR(255),
   status ENUM('active', 'suspended') DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS assignments (
 CREATE TABLE IF NOT EXISTS study_sessions (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  assignment_id INT, -- Optional: link to an assignment
+  assignment_id INT,
   title VARCHAR(255) NOT NULL,
   start_time DATETIME NOT NULL,
   end_time DATETIME NOT NULL,
@@ -71,9 +71,9 @@ CREATE TABLE IF NOT EXISTS tutors (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT UNIQUE NOT NULL,
   bio TEXT,
-  subjects JSON, -- Store as JSON array, e.g., '["Math", "Physics"]'
-  hourly_rate DECIMAL(5, 2),
-  availability JSON, -- Store as JSON array of objects, e.g., '[{"day": "Monday", "start": "09:00", "end": "17:00"}]'
+  subjects JSON, 
+  -- Removed hourly_rate DECIMAL(5, 2)
+  availability JSON, 
   is_approved BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS tutoring_requests (
   student_id INT NOT NULL,
   tutor_id INT NOT NULL,
   topic VARCHAR(255) NOT NULL,
-  preferred_time_windows JSON, -- Store as JSON array of objects, e.g., '[{"day": "Monday", "start": "10:00", "end": "12:00"}]'
+  preferred_time_windows TEXT, -- Changed from JSON to TEXT
   details TEXT,
   status ENUM('pending', 'accepted', 'declined', 'cancelled') DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -109,12 +109,12 @@ CREATE TABLE IF NOT EXISTS tutoring_sessions (
 
 CREATE TABLE IF NOT EXISTS resources (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL, -- Publisher
-  course_id INT, -- Optional: link to a specific course
+  user_id INT NOT NULL, 
+  course_id INT, 
   title VARCHAR(255) NOT NULL,
   type ENUM('link', 'text') NOT NULL,
   content TEXT NOT NULL,
-  tags JSON, -- Store as JSON array, e.g., '["math", "algebra"]'
+  tags JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -123,8 +123,8 @@ CREATE TABLE IF NOT EXISTS resources (
 
 CREATE TABLE IF NOT EXISTS qa_threads (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL, -- Creator of the thread
-  course_id INT, -- Optional: link to a specific course
+  user_id INT NOT NULL,
+  course_id INT,
   title VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS qa_threads (
 CREATE TABLE IF NOT EXISTS qa_posts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   thread_id INT NOT NULL,
-  user_id INT NOT NULL, -- Poster of the reply
+  user_id INT NOT NULL,
   content TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -157,9 +157,9 @@ CREATE TABLE IF NOT EXISTS reported_content (
 CREATE TABLE IF NOT EXISTS notifications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
-  type VARCHAR(255) NOT NULL, -- e.g., 'tutor_request_accepted', 'session_reminder'
+  type VARCHAR(255) NOT NULL, 
   message TEXT NOT NULL,
-  link VARCHAR(255), -- Optional link to relevant page
+  link VARCHAR(255),
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -167,16 +167,60 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE TABLE IF NOT EXISTS audit_logs (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  admin_id INT NOT NULL,
-  action_type VARCHAR(255) NOT NULL, -- e.g., 'tutor_approved', 'user_suspended', 'resource_deleted'
-  target_type VARCHAR(255), -- e.g., 'tutor', 'user', 'resource', 'qa_thread', 'qa_post'
+  admin_id INT, 
+  action_type VARCHAR(255) NOT NULL,
+  target_type VARCHAR(255),
   target_id INT,
-  details JSON, -- Store additional details as JSON
+  details JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- seed a user and a few todos
--- The password for the seed user is 'password' and will be hashed on first run
-INSERT IGNORE INTO users (id,email,name,password,role) VALUES (1,'mike@example.com','Michael Johnson', 'password', 'admin');
-INSERT INTO todos (title) VALUES ('Set up Campus CoPilot'), ('Invite teammates'), ('Create first course');
+
+
+-- A. Admin User
+INSERT IGNORE INTO users (id, email, name, password, role) 
+VALUES (1, 'mike@example.com', 'Michael Johnson', 'password', 'admin');
+
+-- B. Tutor 1 (Alice)
+INSERT IGNORE INTO users (id, email, name, password, role) 
+VALUES (2, 'alice@example.com', 'Alice Smith', 'password', 'tutor');
+
+-- Profile for Alice (hourly_rate removed)
+INSERT INTO tutors (user_id, bio, subjects, is_approved) 
+VALUES (
+    2, 
+    'Math whiz with 5 years experience in Calculus and Algebra.', 
+    '["Calculus", "Algebra", "Trigonometry"]', 
+    1 -- Approved
+);
+
+-- C. Tutor 2 (Bob)
+INSERT IGNORE INTO users (id, email, name, password, role) 
+VALUES (3, 'bob@example.com', 'Bob Jones', 'password', 'tutor');
+
+-- Profile for Bob (hourly_rate removed)
+INSERT INTO tutors (user_id, bio, subjects, is_approved) 
+VALUES (
+    3, 
+    'Expert in English Literature and Creative Writing.', 
+    '["Literature", "Writing", "History"]', 
+    1 -- Approved
+);
+
+-- D. Student (Sam)
+INSERT IGNORE INTO users (id, email, name, password, role) 
+VALUES (4, 'sam@example.com', 'Sam Student', 'password', 'student');
+
+
+-- E. Courses
+INSERT INTO courses (code, title) VALUES 
+('MATH101', 'Introduction to Calculus'),
+('ENG202', 'Modern Literature'),
+('CS50', 'Introduction to Computer Science');
+
+-- F. Todos
+INSERT INTO todos (title) VALUES 
+('Set up Campus CoPilot'), 
+('Invite teammates'), 
+('Create first course');

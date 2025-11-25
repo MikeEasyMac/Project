@@ -1,0 +1,48 @@
+<% 
+    
+    function safeParseSubjects(subjects) {
+        if (!subjects) return 'N/A';
+        try {
+            
+            const parsed = JSON.parse(subjects);
+            return Array.isArray(parsed) ? parsed.join(', ') : subjects;
+        } catch (e) {
+            
+            return subjects;
+        }
+    }
+%>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+      <div class="col-md-8">
+          <div class="card shadow">
+              <div class="card-header bg-primary text-white">
+                  <h4 class="mb-0">Request Session with <%= tutor.name %></h4>
+              </div>
+              <div class="card-body">
+                  
+                  <p>
+                    <strong>Availability:</strong> 
+                    <% try { %>
+                        <%= tutor.availability ? JSON.parse(tutor.availability) : 'N/A' %>
+                    <% } catch(e) { %>
+                        <%= tutor.availability || 'N/A' %>
+                    <% } %>
+                </p>
+                  <hr>
+                  
+                  <form action="/tutors/<%= tutor.id %>/request" method="POST">
+
+                      <div class="mb-3">
+                          <label class="form-label">Details</label>
+                          <textarea name="details" class="form-control" rows="3" placeholder="Describe exactly what you need help with..." required></textarea>
+                      </div>
+
+                      <button type="submit" class="btn btn-success w-100">Send Request</button>
+                      <a href="/tutors" class="btn btn-link w-100 mt-2">Cancel</a>
+                  </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

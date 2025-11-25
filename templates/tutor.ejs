@@ -1,21 +1,168 @@
-<h2>Tutor Profile</h2>
-<form action="/tutor/profile" method="POST">
-    <div class="form-group">
-        <label for="bio">Biography</label>
-        <textarea id="bio" name="bio" rows="5"><%= tutor ? tutor.bio || '' : '' %></textarea>
+<div class="container mt-4">
+    <h2>Tutor Dashboard</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group" id="tutor-nav">
+                <a href="#profile-content" class="list-group-item list-group-item-action active" data-target="profile-content">
+                    Profile Management
+                </a>
+                <a href="#requests-content" class="list-group-item list-group-item-action" data-target="requests-content">
+                    Requests 
+                    <% if (openRequests && openRequests.length > 0) { %>
+                        <span class="badge bg-danger float-end"><%= openRequests.length %></span>
+                    <% } %>
+                </a>
+                <a href="#sessions-content" class="list-group-item list-group-item-action" data-target="sessions-content">
+                    Scheduled Sessions
+                </a>
+                <a href="#resources-content" class="list-group-item list-group-item-action" data-target="resources-content">
+                    Add Resources
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            
+            <div id="profile-content" class="tab-content">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3>Edit Profile</h3>
+                        <form action="/tutor/profile" method="POST">
+                            <div class="mb-3">
+                                <label>Bio</label>
+                                <textarea class="form-control" name="bio" rows="4"><%= tutor ? tutor.bio : '' %></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label>Subjects (e.g., Math, CS)</label>
+                                <input type="text" class="form-control" name="subjects" value="<%= tutor ? tutor.subjects : '' %>">
+                            </div>
+                            <div class="mb-3">
+                                <label>Availability</label>
+                                <textarea class="form-control" name="availability"><%= tutor ? tutor.availability : '' %></textarea>
+                            </div>
+                            <button class="btn btn-primary">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="requests-content" class="tab-content hidden" style="display:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3>Pending Requests</h3>
+                        <% if (openRequests && openRequests.length > 0) { %>
+                            <ul class="list-group">
+                                <% openRequests.forEach(req => { %>
+                                    <li class="list-group-item">
+                                        <strong><%= req.student_name %></strong> wants help with <em><%= req.topic %></em>
+                                        <br><small><%= req.details %></small>
+                                        <hr>
+                                        <form action="/tutor/request" method="POST">
+                                            <input type="hidden" name="request_id" value="<%= req.id %>">
+                                            <div class="row g-2">
+                                                <div class="col"><input type="datetime-local" name="proposed_start_time" class="form-control form-control-sm" required></div>
+                                                <div class="col"><input type="datetime-local" name="proposed_end_time" class="form-control form-control-sm" required></div>
+                                                <div class="col-auto">
+                                                    <button name="action" value="accept" class="btn btn-success btn-sm">Accept</button>
+                                                    <button name="action" value="decline" class="btn btn-danger btn-sm">Decline</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <p class="text-muted">No pending requests.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sessions-content" class="tab-content hidden" style="display:none;">
+                 <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3>Scheduled Sessions</h3>
+                        <% if (upcomingSessions && upcomingSessions.length > 0) { %>
+                            <ul class="list-group">
+                                <% upcomingSessions.forEach(sess => { %>
+                                    <li class="list-group-item">
+                                        <strong><%= sess.student_name %></strong> (<%= sess.topic %>)
+                                        <br>
+                                        <%= new Date(sess.start_time).toLocaleString() %>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <p class="text-muted">No upcoming sessions.</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resources-content" class="tab-content hidden" style="display:none;">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3>Resources</h3>
+                        <form action="/tutor/resource" method="POST" class="mb-3">
+                            <input type="text" name="resourceTitle" class="form-control mb-2" placeholder="Title" required>
+                            <textarea name="resourceContent" class="form-control mb-2" placeholder="Content" required></textarea>
+                            <button class="btn btn-primary">Post</button>
+                        </form>
+                        <ul class="list-group">
+                            <% if (resources) { %>
+                                <% resources.forEach(res => { %>
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span><%= res.title %></span>
+                                        <form action="/tutor/resource/delete" method="POST">
+                                            <input type="hidden" name="resource_id" value="<%= res.id %>">
+                                            <button class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </li>
+                                <% }) %>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <div class="form-group">
-        <label for="subjects">Subjects (comma-separated)</label>
-        <input type="text" id="subjects" name="subjects" value="<%= tutor ? (tutor.subjects ? JSON.parse(tutor.subjects).join(', ') : '') : '' %>">
-    </div>
-    <div class="form-group">
-        <label for="hourly_rate">Hourly Rate</label>
-        <input type="number" id="hourly_rate" name="hourly_rate" step="0.01" value="<%= tutor ? tutor.hourly_rate || '' : '' %>">
-    </div>
-    <div class="form-group">
-        <label for="availability">Availability (JSON format)</label>
-        <textarea id="availability" name="availability" rows="5" placeholder='[{"day": "Monday", "start": "09:00", "end": "17:00"}]'><%= tutor ? (tutor.availability ? JSON.stringify(tutor.availability, null, 2) : '') : '' %></textarea>
-        <small class="form-text text-muted">Example: `[{"day": "Monday", "start": "09:00", "end": "17:00"}]`</small>
-    </div>
-    <button type="submit">Save Profile</button>
-</form>
+</div>
+
+<script>
+    // TAB SWITCHING LOGIC
+    document.addEventListener("DOMContentLoaded", function() {
+        const navLinks = document.querySelectorAll("#tutor-nav .list-group-item-action");
+        const contentTabs = document.querySelectorAll(".tab-content");
+
+        function activateTab(targetId) {
+            // Hide all tabs
+            contentTabs.forEach(tab => tab.style.display = "none");
+            navLinks.forEach(nav => nav.classList.remove("active"));
+            
+            // Show target tab
+            const targetContent = document.getElementById(targetId);
+            const link = document.querySelector(`[data-target="${targetId}"]`);
+            
+            if (targetContent) targetContent.style.display = "block";
+            if (link) link.classList.add("active");
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute("data-target");
+                activateTab(targetId);
+                window.location.hash = targetId; 
+            });
+        });
+
+   
+        const hash = window.location.hash.substring(1);
+        if (hash && document.getElementById(hash)) {
+            activateTab(hash);
+        }
+    });
+</script>

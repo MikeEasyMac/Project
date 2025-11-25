@@ -62,19 +62,21 @@ router.get('/', isAuthenticated, async (req, res) => {
             [userId]
         );
 
-        res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'index.ejs'), {
-                users: stats[0].users,
-                todos: stats[0].todos,
-                items: items,
-                upcomingAssignments: upcomingAssignments,
-                upcomingStudySessions: upcomingStudySessions
-            })
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
+        // Corrected Syntax:
+
+res.render('base', {
+    mainTemplate: 'index', 
+    users: stats[0].users,
+    todos: stats[0].todos,
+    items: items,
+    upcomingAssignments: upcomingAssignments,
+    upcomingStudySessions: upcomingStudySessions
+}); 
+} catch (err) { 
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+}
+
 });
 
 router.post('/todo', isAuthenticated, async (req, res) => {
@@ -102,11 +104,14 @@ router.post('/todo', isAuthenticated, async (req, res) => {
 router.get('/courses', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT * FROM courses ORDER BY id DESC;");
+        
+        
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'courses.ejs'), {
-                courses: courses
-            })
+            mainTemplate: 'courses', 
+            courses: courses         
         });
+        
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -170,10 +175,10 @@ router.get('/my-courses', isAuthenticated, async (req, res) => {
         }
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'my-courses.ejs'), {
-                courses: courses
-            })
+            mainTemplate: 'my-courses', 
+            courses: courses
         });
+        
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -192,9 +197,9 @@ router.get('/assignments/add', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'add-assignment.ejs'), {
-                courses: courses
-            })
+            mainTemplate: 'add-assignment', 
+            courses: courses
+        
         });
     } catch (err) {
         console.error(err);
@@ -250,11 +255,11 @@ router.get('/assignments/:id/edit', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'edit-assignment.ejs'), {
-                assignment: assignment,
-                courses: courses
-            })
+            mainTemplate: 'edit-assignment', 
+            assignment: assignment,
+            courses: courses
         });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -368,12 +373,11 @@ router.get('/study-sessions', isAuthenticated, async (req, res) => {
 
         const [studySessions] = await db.execute(query, params);
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'study-sessions.ejs'), {
-                studySessions: studySessions,
-                currentPage: parseInt(page),
-                totalPages: totalPages
-            })
-        });
+    mainTemplate: 'study-sessions', 
+    studySessions: studySessions,
+    currentPage: parseInt(page),
+    totalPages: totalPages
+});
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -392,9 +396,8 @@ router.get('/study-sessions/add', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'add-study-session.ejs'), {
-                assignments: assignments
-            })
+            mainTemplate: 'add-study-session', 
+            assignments: assignments
         });
     } catch (err) {
         console.error(err);
@@ -483,10 +486,9 @@ router.get('/study-sessions/:id/edit', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'edit-study-session.ejs'), {
-                session: session,
-                assignments: assignments
-            })
+            mainTemplate: 'edit-study-session', 
+            session: session,
+            assignments: assignments
         });
     } catch (err) {
         console.error(err);
@@ -692,9 +694,8 @@ router.get('/profile', isAuthenticated, async (req, res) => {
         }
         const user = users[0];
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'profile.ejs'), {
-                user: user
-            })
+            mainTemplate: 'profile',
+            user: user
         });
     } catch (err) {
         console.error(err);
@@ -735,27 +736,8 @@ router.get('/users', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const [users] = await db.execute("SELECT name,email FROM users ORDER BY id DESC;");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'users.ejs'), {
-                users: users
-            })
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// TUT-01: Tutor Profile
-router.get('/tutor/profile', isAuthenticated, isTutor, async (req, res) => {
-    try {
-        const userId = req.session.user.id;
-        const [tutors] = await db.execute("SELECT * FROM tutors WHERE user_id = ?", [userId]);
-        const tutor = tutors.length > 0 ? tutors[0] : null;
-
-        res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor.ejs'), {
-                tutor: tutor
-            })
+            mainTemplate: 'users',
+            users: users
         });
     } catch (err) {
         console.error(err);
@@ -770,46 +752,50 @@ router.post('/tutor/profile', isAuthenticated, isTutor, async (req, res) => {
         await connection.beginTransaction();
 
         const userId = req.session.user.id;
-        const { bio, subjects, hourly_rate, availability } = req.body;
-
-        let parsedSubjects = null;
-        if (subjects) {
+        
+        // Sanitize incoming body fields, replacing undefined/empty with null
+        const bio = req.body.bio || null; 
+        const subjects = req.body.subjects || null;
+        const availability = req.body.availability || null;
+        
+        // --- 1. SAFE SUBJECT PARSING ---
+        let parsedSubjects = '[]';
+        if (subjects && subjects.trim() !== '') {
+            // Converts comma-separated text into a JSON array string
             parsedSubjects = JSON.stringify(subjects.split(',').map(s => s.trim()));
         }
 
-        let parsedAvailability = null;
-        if (availability) {
-            try {
-                parsedAvailability = JSON.parse(availability);
-                parsedAvailability = JSON.stringify(parsedAvailability);
-            } catch (e) {
-                await connection.rollback();
-                return res.status(400).send('Invalid format for availability. Must be valid JSON.'); // SAFE-01
-            }
+        // --- 2. SAFE AVAILABILITY PARSING ---
+        let dbAvailability = '""'; // Default to empty string wrapped in JSON
+        if (availability && availability.trim() !== '') {
+            // Ensure the plain text is wrapped as a valid JSON string for the column
+            // e.g., "Mondays 3-5pm" becomes '"Mondays 3-5pm"'
+            dbAvailability = JSON.stringify(availability.trim());
         }
 
+        // --- 3. DATABASE UPDATE ---
         const [existingTutors] = await connection.execute("SELECT * FROM tutors WHERE user_id = ?", [userId]);
 
         if (existingTutors.length > 0) {
-            // Update existing profile
+            // UPDATE: 4 placeholders for columns + 1 for WHERE clause = 5 bind parameters
             await connection.execute(
-                "UPDATE tutors SET bio = ?, subjects = ?, hourly_rate = ?, availability = ? WHERE user_id = ?",
-                [bio, parsedSubjects, hourly_rate, parsedAvailability, userId]
+                "UPDATE tutors SET bio = ?, subjects = ?, availability = ? WHERE user_id = ?",
+                [bio, parsedSubjects, dbAvailability, userId] 
             );
         } else {
-            // Create new profile
+            // INSERT: 4 placeholders for columns = 4 bind parameters
             await connection.execute(
-                "INSERT INTO tutors (user_id, bio, subjects, hourly_rate, availability) VALUES (?, ?, ?, ?, ?)",
-                [userId, bio, parsedSubjects, hourly_rate, parsedAvailability]
+                "INSERT INTO tutors (user_id, bio, subjects, availability) VALUES (?, ?, ?, ?)",
+                [userId, bio, parsedSubjects, dbAvailability]
             );
         }
 
-        await connection.commit(); // SAFE-02: Atomic action
-        res.redirect('/tutor/profile');
+        await connection.commit();
+        res.redirect('/tutor#profile-content'); // Redirect after successful save
     } catch (err) {
-        if (connection) await connection.rollback(); // SAFE-02: Atomic action
-        console.error(err);
-        res.status(500).send('Internal Server Error'); // SAFE-01
+        if (connection) await connection.rollback();
+        console.error("Profile Update Error:", err);
+        res.status(500).send('Error saving profile.'); 
     } finally {
         if (connection) connection.release();
     }
@@ -817,8 +803,106 @@ router.post('/tutor/profile', isAuthenticated, isTutor, async (req, res) => {
 
 router.get('/tutor', isAuthenticated, isTutor, async (req, res) => {
     try {
+        const { page = 1, limit = 10 } = req.query;
+        const offset = (parseInt(page) - 1) * parseInt(limit);
+        const tutorUserId = req.session.user.id;
+        
+        // 1. FETCH TUTOR PROFILE
+        const [tutorProfileData] = await db.execute(
+            `SELECT t.id, u.name, t.bio, t.subjects, t.availability 
+             FROM tutors t
+             JOIN users u ON t.user_id = u.id
+             WHERE t.user_id = ?`,
+            [tutorUserId]
+        );
+
+        if (tutorProfileData.length === 0) {
+            return res.status(403).send('Tutor profile not found.');
+        }
+        const tutorProfile = tutorProfileData[0]; 
+        const tutorId = tutorProfile.id; 
+
+        // 2. FETCH OPEN REQUESTS
+        let openRequestsQuery = `
+            SELECT tr.*, u.name AS student_name
+             FROM tutoring_requests tr
+             JOIN users u ON tr.student_id = u.id
+             WHERE tr.tutor_id = ? AND tr.status = 'pending'
+             ORDER BY tr.created_at ASC 
+             LIMIT ? OFFSET ?
+        `;
+        // Fetch count for pagination
+        const [totalOpenRequests] = await db.execute(`SELECT COUNT(*) AS count FROM tutoring_requests WHERE tutor_id = ? AND status = 'pending'`, [tutorId]);
+        const totalOpenRequestPages = Math.ceil(totalOpenRequests[0].count / parseInt(limit));
+        
+        const [openRequests] = await db.execute(openRequestsQuery, [tutorId, parseInt(limit), parseInt(offset)]);
+
+        // 3. FETCH UPCOMING SESSIONS
+        let upcomingSessionsQuery = `
+        SELECT ts.*, tr.topic, u.name AS student_name
+         FROM tutoring_sessions ts
+         JOIN tutoring_requests tr ON ts.request_id = tr.id
+         JOIN users u ON tr.student_id = u.id
+         WHERE tr.tutor_id = ? AND ts.status = 'scheduled' AND ts.end_time > NOW()
+         ORDER BY ts.start_time ASC
+         LIMIT ? OFFSET ?
+    `;
+        // Fetch count for pagination
+        // CORRECTED totalUpcomingSessions COUNT Query
+const [totalUpcomingSessions] = await db.execute(
+    `SELECT COUNT(*) AS count FROM tutoring_sessions ts 
+     JOIN tutoring_requests tr ON ts.request_id = tr.id 
+     WHERE tr.tutor_id = ? AND ts.status = 'scheduled' AND ts.end_time > NOW()`, 
+    [tutorId]
+);
+
+        const totalUpcomingSessionPages = Math.ceil(totalUpcomingSessions[0].count / parseInt(limit));
+        
+        const [upcomingSessions] = await db.execute(upcomingSessionsQuery, [tutorId, parseInt(limit), parseInt(offset)]);
+
+        // 4. FETCH PAST SESSIONS
+        let pastSessionsQuery = `
+            SELECT ts.*, tr.topic, u.name AS student_name
+             FROM tutoring_sessions ts
+             JOIN tutoring_requests tr ON ts.request_id = tr.id
+             JOIN users u ON tr.student_id = u.id
+             WHERE tr.tutor_id = ? AND ts.status IN ('completed', 'cancelled')
+             ORDER BY ts.start_time DESC
+             LIMIT ? OFFSET ?
+        `;
+        // Fetch count for pagination
+        const [totalPastSessions] = await db.execute(`SELECT COUNT(*) AS count FROM tutoring_sessions ts JOIN tutoring_requests tr ON ts.request_id = tr.id WHERE tr.tutor_id = ? AND ts.status IN ('completed', 'cancelled')`, [tutorId]);
+        const totalPastSessionPages = Math.ceil(totalPastSessions[0].count / parseInt(limit));
+        
+        const [pastSessions] = await db.execute(pastSessionsQuery, [tutorId, parseInt(limit), parseInt(offset)]);
+
+        // 5. FETCH RESOURCES (The missing piece!)
+        // Note: resources usually belong to the user_id, not the tutor_id
+        const [resources] = await db.execute(
+            `SELECT * FROM resources WHERE user_id = ? ORDER BY created_at DESC`, 
+            [tutorUserId]
+        );
+
+        // FINAL RENDER
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor.ejs'))
+            mainTemplate: 'tutor',
+            tutor: tutorProfile,
+            openRequests: openRequests,
+            upcomingSessions: upcomingSessions,
+            pastSessions: pastSessions,
+            resources: resources,
+            user: req.session.user, // <-- This fixes the new error!
+            
+            // Pagination variables
+            currentOpenRequestPage: parseInt(page),
+            totalOpenRequestPages: totalOpenRequestPages,
+            currentUpcomingSessionPage: parseInt(page),
+            totalUpcomingSessionPages: totalUpcomingSessionPages,
+            currentPastSessionPage: parseInt(page),
+            totalPastSessionPages: totalPastSessionPages,
+            
+            // Pass the user object explicitly if base.ejs needs it and res.locals isn't set
+            user: req.session.user 
         });
     } catch (err) {
         console.error(err);
@@ -830,30 +914,33 @@ router.get('/tutor', isAuthenticated, isTutor, async (req, res) => {
 router.get('/tutors', isAuthenticated, async (req, res) => {
     try {
         const [tutors] = await db.execute(
-            `SELECT t.id, u.name, t.bio, t.subjects, t.hourly_rate
+            // Removed t.hourly_rate from the SELECT list
+            `SELECT t.id, u.name, t.bio, t.subjects
              FROM tutors t
              JOIN users u ON t.user_id = u.id`
         );
 
         // SAFE-05: Handle unavailable tutors
+        // --- CORRECTED RENDERING ---
         if (tutors.length === 0) {
             return res.render('base', {
-                body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutors.ejs'), {
-                    tutors: [],
-                    message: 'No tutors are currently available. Please check back later.' // SAFE-01: Clear error message
-                })
+                mainTemplate: 'tutors',
+                tutors: [],
+                message: 'No tutors are currently available. Please check back later.',
+                user: req.session.user
             });
         }
+// -------------------------
 
-        res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutors.ejs'), {
-                tutors: tutors
-            })
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
+res.render('base', {
+    mainTemplate: 'tutors',
+    tutors: tutors,
+    user: req.session.user
+});
+} catch (err) {
+console.error(err);
+res.status(500).send('Internal Server Error');
+}
 });
 
 router.get('/tutors/:id/request', isAuthenticated, async (req, res) => {
@@ -871,9 +958,10 @@ router.get('/tutors/:id/request', isAuthenticated, async (req, res) => {
         }
         const tutor = tutors[0];
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'request-tutoring.ejs'), {
-                tutor: tutor
-            })
+            mainTemplate: 'request_tutor',
+            tutor: tutor,
+            user: req.session.user
+        
         });
     } catch (err) {
         console.error(err);
@@ -882,52 +970,36 @@ router.get('/tutors/:id/request', isAuthenticated, async (req, res) => {
 });
 
 router.post('/tutors/:id/request', isAuthenticated, async (req, res) => {
-    let connection;
+    let connection; // Single connection declaration here
     try {
         connection = await db.getConnection();
         await connection.beginTransaction();
 
         const tutorId = req.params.id;
         const studentId = req.session.user.id;
-        const { topic, preferred_time_windows, details } = req.body;
+        
+        // 1. Get data from the form (using the new plain text field)
+        const { topic, proposed_times_text, details } = req.body; 
 
-        // SAFE-06 & SAFE-07: Basic validation for preferred_time_windows to be valid JSON and not in the past
-        let parsedTimeWindows = null;
-        if (preferred_time_windows) {
-            try {
-                parsedTimeWindows = JSON.parse(preferred_time_windows);
-                if (!Array.isArray(parsedTimeWindows)) {
-                    await connection.rollback();
-                    return res.status(400).send('Invalid format for preferred time windows. Must be a JSON array.'); // SAFE-01
-                }
-                const now = new Date();
-                for (const window of parsedTimeWindows) {
-                    if (new Date(window.start) < now) {
-                        await connection.rollback();
-                        return res.status(400).send('Cannot request a tutoring session in the past.'); // SAFE-01
-                    }
-                    if (new Date(window.start) >= new Date(window.end)) {
-                        await connection.rollback();
-                        return res.status(400).send('Preferred time window end must be after start.'); // SAFE-01
-                    }
-                }
-            } catch (e) {
-                await connection.rollback();
-                return res.status(400).send('Invalid format for preferred time windows. Must be valid JSON.'); // SAFE-01
-            }
-        }
+        // 2. Prepare the preferred time text for the JSON column
+        const preferredTimeWindows = proposed_times_text ? proposed_times_text.trim() : 'N/A';
+        
+        // CRITICAL FIX: To satisfy the DB's JSON column constraint, 
+        // we wrap the plain text string in quotes, making it a valid JSON string.
+        const dbTimeWindows = JSON.stringify(preferredTimeWindows); 
 
+        // 3. Execute the single, correct INSERT query
         await connection.execute(
             "INSERT INTO tutoring_requests (student_id, tutor_id, topic, preferred_time_windows, details) VALUES (?, ?, ?, ?, ?)",
-            [studentId, tutorId, topic, JSON.stringify(parsedTimeWindows), details]
+            [studentId, tutorId, topic, dbTimeWindows, details]
         );
 
         await connection.commit(); // SAFE-02: Atomic action
         res.redirect('/my-tutoring-requests');
     } catch (err) {
         if (connection) await connection.rollback(); // SAFE-02: Atomic action
-        console.error(err);
-        res.status(500).send('Internal Server Error'); // SAFE-01: Clear error message
+        console.error("Tutoring Request Error:", err);
+        res.status(500).send('Internal Server Error: Failed to submit request.'); // SAFE-01: Clear error message
     } finally {
         if (connection) connection.release();
     }
@@ -968,11 +1040,11 @@ router.get('/my-tutoring-requests', isAuthenticated, async (req, res) => {
 
         const [tutoringRequests] = await db.execute(query, params);
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'my-tutoring-requests.ejs'), {
-                tutoringRequests: tutoringRequests,
-                currentPage: parseInt(page),
-                totalPages: totalPages
-            })
+            mainTemplate: 'my-tutoring-requests',
+            tutoringRequests: tutoringRequests,
+            currentPage: parseInt(page),
+            totalPages: totalPages
+        
         });
     } catch (err) {
         console.error(err);
@@ -1140,81 +1212,6 @@ router.post('/tutoring-sessions/:id/feedback', isAuthenticated, async (req, res)
     }
 });
 
-// --- Tutor Request Management and Sessions ---
-router.get('/tutor/requests', isAuthenticated, isTutor, async (req, res) => {
-    try {
-        const { page = 1, limit = 10 } = req.query;
-        const offset = (parseInt(page) - 1) * parseInt(limit);
-        const tutorUserId = req.session.user.id;
-        const [tutorData] = await db.execute("SELECT id FROM tutors WHERE user_id = ?", [tutorUserId]);
-        if (tutorData.length === 0) {
-            return res.status(403).send('Tutor profile not found.');
-        }
-        const tutorId = tutorData[0].id;
-
-        // Open Requests
-        let openRequestsQuery = `
-            SELECT tr.*, u.name AS student_name
-             FROM tutoring_requests tr
-             JOIN users u ON tr.student_id = u.id
-             WHERE tr.tutor_id = ? AND tr.status = 'pending'
-        `;
-        const openRequestsParams = [tutorId];
-        const [totalOpenRequests] = await db.execute(`SELECT COUNT(*) AS count FROM tutoring_requests WHERE tutor_id = ? AND status = 'pending'`, [tutorId]);
-        const totalOpenRequestPages = Math.ceil(totalOpenRequests[0].count / parseInt(limit));
-        openRequestsQuery += ` ORDER BY tr.created_at ASC LIMIT ? OFFSET ?`;
-        openRequestsParams.push(parseInt(limit), parseInt(offset));
-        const [openRequests] = await db.execute(openRequestsQuery, openRequestsParams);
-
-        // Upcoming Sessions
-        let upcomingSessionsQuery = `
-            SELECT ts.*, tr.topic, u.name AS student_name
-             FROM tutoring_sessions ts
-             JOIN tutoring_requests tr ON ts.request_id = tr.id
-             JOIN users u ON tr.student_id = u.id
-             WHERE tr.tutor_id = ? AND ts.status = 'scheduled' AND ts.start_time > NOW()
-        `;
-        const upcomingSessionsParams = [tutorId];
-        const [totalUpcomingSessions] = await db.execute(`SELECT COUNT(*) AS count FROM tutoring_sessions ts JOIN tutoring_requests tr ON ts.request_id = tr.id WHERE tr.tutor_id = ? AND ts.status = 'scheduled' AND ts.start_time > NOW()`, [tutorId]);
-        const totalUpcomingSessionPages = Math.ceil(totalUpcomingSessions[0].count / parseInt(limit));
-        upcomingSessionsQuery += ` ORDER BY ts.start_time ASC LIMIT ? OFFSET ?`;
-        upcomingSessionsParams.push(parseInt(limit), parseInt(offset));
-        const [upcomingSessions] = await db.execute(upcomingSessionsQuery, upcomingSessionsParams);
-
-        // Past Sessions
-        let pastSessionsQuery = `
-            SELECT ts.*, tr.topic, u.name AS student_name
-             FROM tutoring_sessions ts
-             JOIN tutoring_requests tr ON ts.request_id = tr.id
-             JOIN users u ON tr.student_id = u.id
-             WHERE tr.tutor_id = ? AND ts.status IN ('completed', 'cancelled')
-        `;
-        const pastSessionsParams = [tutorId];
-        const [totalPastSessions] = await db.execute(`SELECT COUNT(*) AS count FROM tutoring_sessions ts JOIN tutoring_requests tr ON ts.request_id = tr.id WHERE tr.tutor_id = ? AND ts.status IN ('completed', 'cancelled')`, [tutorId]);
-        const totalPastSessionPages = Math.ceil(totalPastSessions[0].count / parseInt(limit));
-        pastSessionsQuery += ` ORDER BY ts.start_time DESC LIMIT ? OFFSET ?`;
-        pastSessionsParams.push(parseInt(limit), parseInt(offset));
-        const [pastSessions] = await db.execute(pastSessionsQuery, pastSessionsParams);
-
-        res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor-requests.ejs'), {
-                openRequests: openRequests,
-                upcomingSessions: upcomingSessions,
-                pastSessions: pastSessions,
-                currentOpenRequestPage: parseInt(page),
-                totalOpenRequestPages: totalOpenRequestPages,
-                currentUpcomingSessionPage: parseInt(page),
-                totalUpcomingSessionPages: totalUpcomingSessionPages,
-                currentPastSessionPage: parseInt(page),
-                totalPastSessionPages: totalPastSessionPages
-            })
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
 // When tutor accepts a request (TUT-02, NOT-01)
 router.post('/tutor/requests/:id/accept', isAuthenticated, isTutor, async (req, res) => {
     let connection;
@@ -1269,7 +1266,92 @@ router.post('/tutor/requests/:id/accept', isAuthenticated, isTutor, async (req, 
         if (connection) connection.release();
     }
 });
+router.post('/tutor/request', isAuthenticated, isTutor, async (req, res) => {
+    let connection;
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
 
+        const { request_id, proposed_start_time, proposed_end_time, action } = req.body;
+        const tutorUserId = req.session.user.id;
+
+        if (!request_id || !action) {
+            await connection.rollback();
+            return res.status(400).send('Missing request ID or action.');
+        }
+
+        // 1. Fetch tutor details
+        const [tutorData] = await connection.execute("SELECT id FROM tutors WHERE user_id = ?", [tutorUserId]);
+        if (tutorData.length === 0) {
+            await connection.rollback();
+            return res.status(403).send('Tutor profile not found.');
+        }
+        const tutorId = tutorData[0].id;
+
+        // 2. Validate request ownership and fetch details
+        const [requests] = await connection.execute("SELECT student_id, topic FROM tutoring_requests WHERE id = ? AND tutor_id = ?", [request_id, tutorId]);
+        if (requests.length === 0) {
+            await connection.rollback();
+            return res.status(404).send('Tutoring request not found or not authorized.');
+        }
+        const request = requests[0];
+        
+        // --- 3. EXECUTE ACTION (ACCEPT or DECLINE) ---
+        let newStatus;
+        let notificationType;
+        let notificationMessage;
+
+        if (action === 'accept') {
+            newStatus = 'accepted';
+            notificationType = 'tutor_request_accepted';
+            notificationMessage = `Your tutoring request for '${request.topic}' has been accepted by ${req.session.user.name}.`;
+
+            // Requires start/end times for scheduling
+            if (!proposed_start_time || !proposed_end_time) {
+                await connection.rollback();
+                return res.status(400).send('Missing proposed start/end times.');
+            }
+            
+            // Insert into sessions table
+            await connection.execute(
+                "INSERT INTO tutoring_sessions (request_id, start_time, end_time, status) VALUES (?, ?, ?, ?)",
+                [request_id, proposed_start_time, proposed_end_time, 'scheduled']
+            );
+        } else if (action === 'decline') {
+            newStatus = 'declined';
+            notificationType = 'tutor_request_declined';
+            notificationMessage = `Your tutoring request for '${request.topic}' has been declined by ${req.session.user.name}.`;
+        } else {
+            await connection.rollback();
+            return res.status(400).send('Invalid action specified.');
+        }
+
+        // 4. Update request status
+        await connection.execute("UPDATE tutoring_requests SET status = ? WHERE id = ?", [newStatus, request_id]);
+        
+        // 5. Create notification for the student
+        await connection.execute(
+            "INSERT INTO notifications (user_id, type, message, link) VALUES (?, ?, ?, ?)",
+            [request.student_id, notificationType, notificationMessage, `/my-tutoring-requests`]
+        );
+
+        // 6. Audit Log (Simplified)
+        await connection.execute(
+            "INSERT INTO audit_logs (admin_id, action_type, target_type, target_id, details) VALUES (?, ?, ?, ?, ?)",
+            [tutorUserId, `tutoring_request_${newStatus}`, 'tutoring_request', request_id, JSON.stringify({ tutor_id: tutorId, student_id: request.student_id })]
+        );
+
+        await connection.commit();
+        res.redirect('/tutor#requests-content'); // Redirect back to dashboard requests tab
+        
+    } catch (err) {
+        if (connection) await connection.rollback();
+        console.error("Tutoring Request Action Error:", err);
+        res.status(500).send('Internal Server Error during request processing.');
+    } finally {
+        if (connection) connection.release();
+    }
+});
 router.post('/tutor/requests/:id/decline', isAuthenticated, isTutor, async (req, res) => {
     let connection;
     try {
@@ -1347,9 +1429,8 @@ router.get('/tutor/sessions/:id/summary', isAuthenticated, isTutor, async (req, 
         const session = sessions[0];
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'session-summary.ejs'), {
-                session: session
-            })
+            mainTemplate: 'session-summary',
+            session: session
         });
     } catch (err) {
         console.error(err);
@@ -1410,6 +1491,31 @@ router.post('/tutor/sessions/:id/summary', isAuthenticated, isTutor, async (req,
     }
 });
 
+router.post('/tutor/request/:id/accept', isAuthenticated, isTutor, async (req, res) => {
+    try {
+        const requestId = req.params.id; // The unique ID of the tutoring request
+        const tutorUserId = req.session.user.id;
+
+        // 1. Update the request status to 'accepted'
+        const [result] = await db.execute(
+            "UPDATE tutoring_requests SET status = 'accepted' WHERE id = ? AND tutor_id = ?",
+            [requestId, tutorUserId]
+        );
+
+        if (result.affectedRows === 0) {
+            // This happens if the request ID is wrong or the request doesn't belong to this tutor
+            return res.status(404).send('Request not found or not authorized to accept.');
+        }
+
+        // 2. Redirect back to the dashboard's requests tab
+        res.redirect('/tutor#requests-content'); 
+
+    } catch (err) {
+        console.error("Error accepting request:", err);
+        res.status(500).send('Internal Server Error while accepting request.');
+    }
+});
+
 // --- Resources Routes (RSC-01, RSC-02) ---
 router.get('/resources', isAuthenticated, async (req, res) => {
     try {
@@ -1452,14 +1558,13 @@ router.get('/resources', isAuthenticated, async (req, res) => {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'resources.ejs'), {
-                resources: resources,
-                courses: courses,
-                search: search,
-                course_id: course_id,
-                currentPage: parseInt(page),
-                totalPages: totalPages
-            })
+            mainTemplate: 'resources',
+            resources: resources,
+            courses: courses,
+            search: search,
+            course_id: course_id,
+            currentPage: parseInt(page),
+            totalPages: totalPages
         });
     } catch (err) {
         console.error(err);
@@ -1475,18 +1580,35 @@ router.get('/resources/publish', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'publish-resource.ejs'), {
-                courses: courses
-            })
+            mainTemplate: 'publish-resource',
+            courses: courses
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
 });
+router.post('/tutor/resource', isAuthenticated, isTutor, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        // Get the data from the form
+        const { resourceTitle, resourceContent } = req.body; 
 
+        // 1. Insert the resource into the database
+        await db.execute(
+            "INSERT INTO resources (user_id, title, type, content) VALUES (?, ?, 'text', ?)",
+            [userId, resourceTitle, resourceContent]
+        );
+
+        // 2. Redirect back to the resources tab
+        res.redirect('/tutor#resources-content');
+    } catch (err) {
+        console.error("Error posting resource:", err);
+        res.status(500).send('Internal Server Error while posting resource.');
+    }
+});
 router.post('/resources', isAuthenticated, async (req, res) => {
-    // Only tutors and admins can publish resources
+    
     if (req.session.user.role !== 'tutor' && req.session.user.role !== 'admin') {
         return res.status(403).send('Forbidden');
     }
@@ -1519,6 +1641,35 @@ router.post('/resources', isAuthenticated, async (req, res) => {
     }
 });
 
+router.post('/tutor/resource/delete', isAuthenticated, isTutor, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        // Get the resource_id from the hidden form field
+        const resourceId = req.body.resource_id; 
+
+        if (!resourceId) {
+            return res.status(400).send('Missing resource ID.');
+        }
+
+        // CRITICAL: Delete the resource, but only if it belongs to the logged-in user (security check)
+        const [result] = await db.execute(
+            "DELETE FROM resources WHERE id = ? AND user_id = ?",
+            [resourceId, userId]
+        );
+
+        if (result.affectedRows === 0) {
+            // This happens if the resource ID is wrong or the user tried to delete someone else's resource
+            return res.status(404).send('Resource not found or unauthorized to delete.');
+        }
+
+        // Redirect back to the resources tab after successful deletion
+        res.redirect('/tutor#resources-content');
+
+    } catch (err) {
+        console.error("Error deleting resource:", err);
+        res.status(500).send('Internal Server Error during resource deletion.');
+    }
+});
 // --- Q&A Routes (RSC-03, RSC-04, RSC-05) ---
 router.get('/qa', isAuthenticated, async (req, res) => {
     try {
@@ -1561,14 +1712,13 @@ router.get('/qa', isAuthenticated, async (req, res) => {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'qa-threads.ejs'), {
-                qaThreads: qaThreads,
-                courses: courses,
-                search: search,
-                course_id: course_id,
-                currentPage: parseInt(page),
-                totalPages: totalPages
-            })
+            mainTemplate: 'qa-threads',
+            qaThreads: qaThreads,
+            courses: courses,
+            search: search,
+            course_id: course_id,
+            currentPage: parseInt(page),
+            totalPages: totalPages
         });
     } catch (err) {
         console.error(err);
@@ -1580,9 +1730,8 @@ router.get('/qa/create', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'create-qa-thread.ejs'), {
-                courses: courses
-            })
+            mainTemplate: 'create-qa-thread',
+            courses: courses
         });
     } catch (err) {
         console.error(err);
@@ -1653,10 +1802,9 @@ router.get('/qa/threads/:id', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'qa-thread-detail.ejs'), {
-                thread: thread,
-                posts: posts
-            })
+            mainTemplate: 'qa-thread-detail',
+            thread: thread,
+            posts: posts
         });
     } catch (err) {
         console.error(err);
@@ -1757,9 +1905,8 @@ router.get('/notifications', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'notifications.ejs'), {
-                notifications: notifications
-            })
+            mainTemplate: 'notifications',
+            notifications: notifications
         });
     } catch (err) {
         console.error(err);
@@ -1829,17 +1976,16 @@ router.get('/admin/dashboard', isAuthenticated, isAdmin, async (req, res) => {
         const [allUsers] = await db.execute(allUsersQuery, [parseInt(limit), parseInt(offset)]);
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'admin-dashboard.ejs'), {
-                unapprovedTutors: unapprovedTutors,
-                reportedContent: reportedContent,
-                allUsers: allUsers,
-                currentUnapprovedTutorPage: parseInt(page),
-                totalUnapprovedTutorPages: totalUnapprovedTutorPages,
-                currentReportedContentPage: parseInt(page),
-                totalReportedContentPages: totalReportedContentPages,
-                currentUserPage: parseInt(page),
-                totalUserPages: totalUserPages
-            })
+            mainTemplate: 'admin-dashboard',
+            unapprovedTutors: unapprovedTutors,
+            reportedContent: reportedContent,
+            allUsers: allUsers,
+            currentUnapprovedTutorPage: parseInt(page),
+            totalUnapprovedTutorPages: totalUnapprovedTutorPages,
+            currentReportedContentPage: parseInt(page),
+            totalReportedContentPages: totalReportedContentPages,
+            currentUserPage: parseInt(page),
+            totalUserPages: totalUserPages
         });
     } catch (err) {
         console.error(err);
@@ -2009,5 +2155,6 @@ router.post('/admin/users/:id/activate', isAuthenticated, isAdmin, async (req, r
         if (connection) connection.release();
     }
 });
+
 
 module.exports = router;

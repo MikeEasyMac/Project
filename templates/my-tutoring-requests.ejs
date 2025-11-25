@@ -6,7 +6,14 @@
         <h4>Request for <%= request.tutor_name %> (Topic: <%= request.topic %>)</h4>
         <p><strong>Status:</strong> <%= request.status %></p>
         <p><strong>Details:</strong> <%= request.details %></p>
-        <p><strong>Preferred Times:</strong> <%= request.preferred_time_windows ? JSON.parse(request.preferred_time_windows).map(t => `${t.day} ${t.start}-${t.end}`).join(', ') : 'N/A' %></p>
+        <p>
+          <strong>Proposed Times:</strong> 
+          <% try { %>
+              <%= request.preferred_time_windows ? JSON.parse(request.preferred_time_windows) : 'N/A' %>
+          <% } catch(e) { %>
+              <%= request.preferred_time_windows || 'N/A' %>
+          <% } %>
+      </p>
         <p><strong>Requested On:</strong> <%= new Date(request.created_at).toLocaleString() %></p>
 
         <% if (request.status === 'pending') { %>

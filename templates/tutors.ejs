@@ -1,12 +1,25 @@
 <h2>Available Tutors</h2>
+<% 
+    
+    function safeParseSubjects(subjects) {
+        if (!subjects) return 'N/A';
+        try {
+            /
+            const parsed = JSON.parse(subjects);
+            return Array.isArray(parsed) ? parsed.join(', ') : subjects;
+        } catch (e) {
+            
+            return subjects;
+        }
+    }
+%>
 <% if (tutors.length > 0) { %>
   <ul class="list-group">
     <% tutors.forEach(function(tutor) { %>
       <li class="list-group-item">
         <h4><%= tutor.name %></h4>
         <p><strong>Bio:</strong> <%= tutor.bio || 'N/A' %></p>
-        <p><strong>Subjects:</strong> <%= tutor.subjects ? JSON.parse(tutor.subjects).join(', ') : 'N/A' %></p>
-        <p><strong>Hourly Rate:</strong> $<%= tutor.hourly_rate || 'N/A' %></p>
+        <p><strong>Subjects:</strong> <%= safeParseSubjects(tutor.subjects) %></p>
         <a href="/tutors/<%= tutor.id %>/request" class="btn btn-primary">Request Tutoring</a>
       </li>
     <% }); %>
