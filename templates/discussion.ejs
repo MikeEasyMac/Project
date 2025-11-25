@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Copilot - Discussion Board</title>
+    <link rel="stylesheet" href="../static/css/discussion.css">
+</head>
+<body>
+
+    <!-- Top Banner -->
+    <header class="banner">
+        <div class="banner-left">
+            <button class="menu-btn" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>Campus Copilot</h1>
+        </div>
+
+        <div class="banner-right">
+            <button class="icon-btn" aria-label="Notifications">🔔</button>
+            <button class="icon-btn profile-btn" aria-label="Profile">👤</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content discussion-layout">
+
+        <!-- Left sidebar: categories / channels -->
+        <aside class="discussion-sidebar">
+            <h2 class="sidebar-title">Topics</h2>
+            <ul class="sidebar-list">
+                <li class="sidebar-item active">All Discussions</li>
+                <li class="sidebar-item">Course Help</li>
+                <li class="sidebar-item">Tutoring Requests</li>
+                <li class="sidebar-item">Study Groups</li>
+                <li class="sidebar-item">General Chat</li>
+                <li class="sidebar-item">Announcements</li>
+            </ul>
+        </aside>
+
+        <!-- Center: thread list -->
+        <section class="discussion-main">
+            <div class="discussion-main-header">
+                <input
+                    type="text"
+                    class="thread-search"
+                    placeholder="Search discussions"
+                    aria-label="Search discussions"
+                >
+                <button class="primary-btn" type="button">New Post</button>
+            </div>
+
+            <div class="thread-list">
+                <article class="thread-card">
+                    <h3 class="thread-title">Need help with Calculus homework</h3>
+                    <p class="thread-meta">Posted by Alex J · Calculus I · 12 replies · 1 hour ago</p>
+                    <p class="thread-preview">
+                        I am stuck on limits and derivatives. Can someone explain the intuition behind the rules...
+                    </p>
+                    <div class="thread-tags">
+                        <span class="tag">Math</span>
+                        <span class="tag">First Year</span>
+                    </div>
+                </article>
+
+                <article class="thread-card">
+                    <h3 class="thread-title">Looking for a study group for Physics 2</h3>
+                    <p class="thread-meta">Posted by Taylor S · Physics II · 8 replies · 3 hours ago</p>
+                    <p class="thread-preview">
+                        I would like to form a virtual or in person study group for the midterm coming up next week...
+                    </p>
+                    <div class="thread-tags">
+                        <span class="tag">Physics</span>
+                        <span class="tag">Study Group</span>
+                    </div>
+                </article>
+
+                <article class="thread-card">
+                    <h3 class="thread-title">Recommended resources for learning Python</h3>
+                    <p class="thread-meta">Posted by Jordan L · CS101 · 15 replies · Yesterday</p>
+                    <p class="thread-preview">
+                        Does anyone have suggestions for good tutorials or videos for absolute beginners to Python...
+                    </p>
+                    <div class="thread-tags">
+                        <span class="tag">Programming</span>
+                        <span class="tag">Python</span>
+                    </div>
+                </article>
+
+                <article class="thread-card">
+                    <h3 class="thread-title">Exam prep tips for Organic Chemistry</h3>
+                    <p class="thread-meta">Posted by Casey N · Organic Chemistry · 4 replies · 2 days ago</p>
+                    <p class="thread-preview">
+                        What helped you remember reaction mechanisms and functional groups for the final exam...
+                    </p>
+                    <div class="thread-tags">
+                        <span class="tag">Chemistry</span>
+                        <span class="tag">Exam Prep</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Right: selected thread preview / reply box -->
+        <aside class="discussion-detail">
+            <header class="detail-header">
+                <h2 class="detail-title">Thread preview</h2>
+                <p class="detail-subtitle">
+                    Select a discussion from the center list to view the conversation.
+                </p>
+            </header>
+
+            <!-- Example static thread content -->
+            <div class="detail-thread">
+                <h3 class="detail-thread-title">Need help with Calculus homework</h3>
+                <p class="detail-thread-meta">Started by Alex J · Calculus I</p>
+
+                <div class="detail-messages">
+                    <div class="message">
+                        <div class="message-header">
+                            <span class="message-author">Alex J</span>
+                            <span class="message-time">Today 2:14 PM</span>
+                        </div>
+                        <p class="message-body">
+                            I am having trouble with limits and derivatives. I understand the rules, but I do not see
+                            why they work. Any explanations or example problems would be appreciated.
+                        </p>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-header">
+                            <span class="message-author">Jordan L</span>
+                            <span class="message-time">Today 2:28 PM</span>
+                        </div>
+                        <p class="message-body">
+                            One way to think about derivatives is to treat them as the rate of change at a single point.
+                            You can try graphing the function and drawing tangent lines to see how the slope changes.
+                        </p>
+                    </div>
+
+                    <div class="message">
+                        <div class="message-header">
+                            <span class="message-author">Tutor Morgan</span>
+                            <span class="message-time">Today 2:45 PM</span>
+                        </div>
+                        <p class="message-body">
+                            If you share a specific problem, we can walk through it and connect the formal rules to the
+                            geometric picture. Limits help define the slope very precisely, especially at corners or
+                            points where the function changes quickly.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-reply">
+                <label for="reply-text" class="reply-label">Add a reply</label>
+                <textarea
+                    id="reply-text"
+                    class="reply-textarea"
+                    placeholder="Write your message here"
+                ></textarea>
+                <div class="reply-actions">
+                    <button class="primary-btn" type="button">Post Reply</button>
+                    <button class="secondary-btn" type="button">Save Draft</button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+</body>
+</html>

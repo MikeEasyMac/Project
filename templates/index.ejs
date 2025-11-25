@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Users</h6>
+          <div class="display-6">{{ users }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Todos</h6>
+          <div class="display-6">{{ todos }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4 shadow-sm">
+    <div class="card-body">
+      <form class="row g-2" method="post" action="/todo">
+        <div class="col-md-10">
+          <input type="text" name="title" class="form-control" placeholder="New todo" required>
+        </div>
+        <div class="col-md-2 d-grid">
+          <button class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ul class="list-group list-group-flush mt-3">
+    {% for t in items %}
+      <li class="list-group-item">{{ t['title'] }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
