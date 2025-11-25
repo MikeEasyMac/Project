@@ -30,10 +30,10 @@ app.use(limiter);
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'templates'));
+app.set('views', path.join(__dirname, 'views'));
 
 // Serve static files (CSS, images, etc.)
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to make user object and unread notification count available to all templates
 app.use(async (req, res, next) => {
@@ -64,8 +64,9 @@ app.use(appRoutes);
 
 // Start the server only if this file is run directly
 if (require.main === module) {
-    app.listen(port, () => {
-        console.log(`Server listening on port ${port}`);
+    const host = process.env.HOST || '0.0.0.0'; // Listen on all available network interfaces by default
+    app.listen(port, host, () => {
+        console.log(`Server listening on http://${host}:${port}`);
     });
 }
 

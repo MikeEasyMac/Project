@@ -63,7 +63,7 @@ router.get('/', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'index.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'index.ejs'), {
                 users: stats[0].users,
                 todos: stats[0].todos,
                 items: items,
@@ -103,7 +103,7 @@ router.get('/courses', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT * FROM courses ORDER BY id DESC;");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'courses.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'courses.ejs'), {
                 courses: courses
             })
         });
@@ -170,7 +170,7 @@ router.get('/my-courses', isAuthenticated, async (req, res) => {
         }
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'my-courses.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'my-courses.ejs'), {
                 courses: courses
             })
         });
@@ -192,7 +192,7 @@ router.get('/assignments/add', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'add-assignment.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'add-assignment.ejs'), {
                 courses: courses
             })
         });
@@ -250,7 +250,7 @@ router.get('/assignments/:id/edit', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'edit-assignment.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'edit-assignment.ejs'), {
                 assignment: assignment,
                 courses: courses
             })
@@ -368,7 +368,7 @@ router.get('/study-sessions', isAuthenticated, async (req, res) => {
 
         const [studySessions] = await db.execute(query, params);
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'study-sessions.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'study-sessions.ejs'), {
                 studySessions: studySessions,
                 currentPage: parseInt(page),
                 totalPages: totalPages
@@ -392,7 +392,7 @@ router.get('/study-sessions/add', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'add-study-session.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'add-study-session.ejs'), {
                 assignments: assignments
             })
         });
@@ -483,7 +483,7 @@ router.get('/study-sessions/:id/edit', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'edit-study-session.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'edit-study-session.ejs'), {
                 session: session,
                 assignments: assignments
             })
@@ -692,7 +692,7 @@ router.get('/profile', isAuthenticated, async (req, res) => {
         }
         const user = users[0];
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'profile.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'profile.ejs'), {
                 user: user
             })
         });
@@ -735,7 +735,7 @@ router.get('/users', isAuthenticated, isAdmin, async (req, res) => {
     try {
         const [users] = await db.execute("SELECT name,email FROM users ORDER BY id DESC;");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'users.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'users.ejs'), {
                 users: users
             })
         });
@@ -753,7 +753,7 @@ router.get('/tutor/profile', isAuthenticated, isTutor, async (req, res) => {
         const tutor = tutors.length > 0 ? tutors[0] : null;
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'tutor.ejs'), {
                 tutor: tutor
             })
         });
@@ -818,7 +818,7 @@ router.post('/tutor/profile', isAuthenticated, isTutor, async (req, res) => {
 router.get('/tutor', isAuthenticated, isTutor, async (req, res) => {
     try {
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor.ejs'))
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'tutor.ejs'))
         });
     } catch (err) {
         console.error(err);
@@ -838,7 +838,7 @@ router.get('/tutors', isAuthenticated, async (req, res) => {
         // SAFE-05: Handle unavailable tutors
         if (tutors.length === 0) {
             return res.render('base', {
-                body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutors.ejs'), {
+                body: await ejs.renderFile(path.join(__dirname, '../views', 'tutors.ejs'), {
                     tutors: [],
                     message: 'No tutors are currently available. Please check back later.' // SAFE-01: Clear error message
                 })
@@ -846,7 +846,7 @@ router.get('/tutors', isAuthenticated, async (req, res) => {
         }
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutors.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'tutors.ejs'), {
                 tutors: tutors
             })
         });
@@ -871,7 +871,7 @@ router.get('/tutors/:id/request', isAuthenticated, async (req, res) => {
         }
         const tutor = tutors[0];
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'request-tutoring.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'request-tutoring.ejs'), {
                 tutor: tutor
             })
         });
@@ -968,7 +968,7 @@ router.get('/my-tutoring-requests', isAuthenticated, async (req, res) => {
 
         const [tutoringRequests] = await db.execute(query, params);
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'my-tutoring-requests.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'my-tutoring-requests.ejs'), {
                 tutoringRequests: tutoringRequests,
                 currentPage: parseInt(page),
                 totalPages: totalPages
@@ -1197,7 +1197,7 @@ router.get('/tutor/requests', isAuthenticated, isTutor, async (req, res) => {
         const [pastSessions] = await db.execute(pastSessionsQuery, pastSessionsParams);
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'tutor-requests.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'tutor-requests.ejs'), {
                 openRequests: openRequests,
                 upcomingSessions: upcomingSessions,
                 pastSessions: pastSessions,
@@ -1347,7 +1347,7 @@ router.get('/tutor/sessions/:id/summary', isAuthenticated, isTutor, async (req, 
         const session = sessions[0];
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'session-summary.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'session-summary.ejs'), {
                 session: session
             })
         });
@@ -1452,7 +1452,7 @@ router.get('/resources', isAuthenticated, async (req, res) => {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'resources.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'resources.ejs'), {
                 resources: resources,
                 courses: courses,
                 search: search,
@@ -1475,7 +1475,7 @@ router.get('/resources/publish', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'publish-resource.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'publish-resource.ejs'), {
                 courses: courses
             })
         });
@@ -1561,7 +1561,7 @@ router.get('/qa', isAuthenticated, async (req, res) => {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'qa-threads.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'qa-threads.ejs'), {
                 qaThreads: qaThreads,
                 courses: courses,
                 search: search,
@@ -1580,7 +1580,7 @@ router.get('/qa/create', isAuthenticated, async (req, res) => {
     try {
         const [courses] = await db.execute("SELECT id, title FROM courses ORDER BY title ASC");
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'create-qa-thread.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'create-qa-thread.ejs'), {
                 courses: courses
             })
         });
@@ -1653,7 +1653,7 @@ router.get('/qa/threads/:id', isAuthenticated, async (req, res) => {
         );
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'qa-thread-detail.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'qa-thread-detail.ejs'), {
                 thread: thread,
                 posts: posts
             })
@@ -1757,7 +1757,7 @@ router.get('/notifications', isAuthenticated, async (req, res) => {
             [userId]
         );
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'notifications.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'notifications.ejs'), {
                 notifications: notifications
             })
         });
@@ -1829,7 +1829,7 @@ router.get('/admin/dashboard', isAuthenticated, isAdmin, async (req, res) => {
         const [allUsers] = await db.execute(allUsersQuery, [parseInt(limit), parseInt(offset)]);
 
         res.render('base', {
-            body: await ejs.renderFile(path.join(__dirname, '../templates', 'admin-dashboard.ejs'), {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'admin-dashboard.ejs'), {
                 unapprovedTutors: unapprovedTutors,
                 reportedContent: reportedContent,
                 allUsers: allUsers,
@@ -2009,5 +2009,39 @@ router.post('/admin/users/:id/activate', isAuthenticated, isAdmin, async (req, r
         if (connection) connection.release();
     }
 });
+
+router.get('/discussion', isAuthenticated, async (req, res) => {
+    try {
+        res.render('base', {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'discussion.ejs'), {})
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.get('/landing', isAuthenticated, async (req, res) => {
+    try {
+        res.render('base', {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'landing.ejs'), {})
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+router.get('/tutor-selection', isAuthenticated, async (req, res) => {
+    try {
+        res.render('base', {
+            body: await ejs.renderFile(path.join(__dirname, '../views', 'tutor-selection.ejs'), {})
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 module.exports = router;
