@@ -1,0 +1,6 @@
+<h3 class="mb-3">Users</h3>
+  <ul class="list-group">
+    <% users.forEach(function(u) { %>
+      <li class="list-group-item"><%= u.name %> <small class="text-muted">&lt;<%= u.email %>&gt;</small></li>
+    <% }); %>
+  </ul>

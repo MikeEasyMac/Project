@@ -1,0 +1,36 @@
+<h2>Edit Assignment</h2>
+<form action="/assignments/<%= assignment.id %>" method="POST">
+    <div class="form-group">
+        <label for="course">Course</label>
+        <select id="course" name="course_id" required>
+            <% courses.forEach(course => { %>
+                <option value="<%= course.id %>" <%= assignment.course_id == course.id ? 'selected' : '' %>><%= course.title %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="title">Assignment Title</label>
+        <input type="text" id="title" name="title" value="<%= assignment.title %>" required>
+    </div>
+    <div class="form-group">
+        <label for="due_date">Due Date</label>
+        <input type="datetime-local" id="due_date" name="due_date" value="<%= assignment.due_date ? new Date(assignment.due_date).toISOString().slice(0,16) : '' %>">
+    </div>
+    <div class="form-group">
+        <label for="effort_estimate">Effort Estimate (minutes)</label>
+        <input type="number" id="effort_estimate" name="effort_estimate" value="<%= assignment.effort_estimate || '' %>" min="0">
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="pending" <%= assignment.status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="completed" <%= assignment.status === 'completed' ? 'selected' : '' %>>Completed</option>
+            <option value="overdue" <%= assignment.status === 'overdue' ? 'selected' : '' %>>Overdue</option>
+        </select>
+    </div>
+    <button type="submit">Update Assignment</button>
+</form>
+
+<form action="/assignments/<%= assignment.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+    <button type="submit" style="background-color: red; margin-top: 10px;">Delete Assignment</button>
+</form>

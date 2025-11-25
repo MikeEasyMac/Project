@@ -1,0 +1,75 @@
+<h2>Admin Dashboard</h2>
+
+<h3>Unapproved Tutors</h3>
+<% if (unapprovedTutors.length > 0) { %>
+  <ul class="list-group mb-4">
+    <% unapprovedTutors.forEach(function(tutor) { %>
+      <li class="list-group-item">
+        <h4><%= tutor.name %></h4>
+        <p><strong>Email:</strong> <%= tutor.email %></p>
+        <p><strong>Bio:</strong> <%= tutor.bio || 'N/A' %></p>
+        <p><strong>Subjects:</strong> <%= tutor.subjects ? JSON.parse(tutor.subjects).join(', ') : 'N/A' %></p>
+        <p><strong>Hourly Rate:</strong> $<%= tutor.hourly_rate || 'N/A' %></p>
+        <form action="/admin/tutors/<%= tutor.id %>/approve" method="POST" class="d-inline-block me-2">
+            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+        </form>
+        <form action="/admin/tutors/<%= tutor.id %>/reject" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to reject this tutor?');">
+            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No unapproved tutors.</p>
+<% } %>
+
+<h3>Reported Content</h3>
+<% if (reportedContent.length > 0) { %>
+  <ul class="list-group mb-4">
+    <% reportedContent.forEach(function(report) { %>
+      <li class="list-group-item">
+        <h4>Report ID: <%= report.id %></h4>
+        <p><strong>Reporter:</strong> <%= report.reporter_name %></p>
+        <p><strong>Content Type:</strong> <%= report.content_type %></p>
+        <p><strong>Content ID:</strong> <%= report.content_id %></p>
+        <p><strong>Reason:</strong> <%= report.reason %></p>
+        <p><strong>Status:</strong> <%= report.status %></p>
+        <% if (report.content_type === 'thread') { %>
+            <a href="/qa/threads/<%= report.content_id %>" class="btn btn-info btn-sm me-2">View Thread</a>
+        <% } else { %>
+            <a href="/qa/threads/<%= report.thread_id %>#post-<%= report.content_id %>" class="btn btn-info btn-sm me-2">View Post</a>
+        <% } %>
+        <form action="/admin/moderate/<%= report.id %>/resolve" method="POST" class="d-inline-block me-2">
+            <button type="submit" class="btn btn-success btn-sm">Mark as Resolved</button>
+        </form>
+        <form action="/admin/moderate/<%= report.id %>/dismiss" method="POST" class="d-inline-block">
+            <button type="submit" class="btn btn-warning btn-sm">Dismiss</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No reported content.</p>
+<% } %>
+
+<h3>User Management</h3>
+<ul class="list-group">
+    <% allUsers.forEach(function(user) { %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong><%= user.name %></strong> (<%= user.email %>) - Role: <%= user.role %> - Status: <%= user.status %>
+            </div>
+            <div>
+                <% if (user.status === 'active') { %>
+                    <form action="/admin/users/<%= user.id %>/suspend" method="POST" class="d-inline-block">
+                        <button type="submit" class="btn btn-danger btn-sm">Suspend</button>
+                    </form>
+                <% } else { %>
+                    <form action="/admin/users/<%= user.id %>/activate" method="POST" class="d-inline-block">
+                        <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                    </form>
+                <% } %>
+            </div>
+        </li>
+    <% }); %>
+</ul>

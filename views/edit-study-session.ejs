@@ -1,0 +1,41 @@
+<h2>Edit Study Session</h2>
+<form action="/study-sessions/<%= session.id %>" method="POST">
+    <div class="form-group">
+        <label for="title">Session Title</label>
+        <input type="text" id="title" name="title" value="<%= session.title %>" required>
+    </div>
+    <div class="form-group">
+        <label for="assignment_id">Related Assignment (Optional)</label>
+        <select id="assignment_id" name="assignment_id">
+            <option value="">None</option>
+            <% assignments.forEach(assignment => { %>
+                <option value="<%= assignment.id %>" <%= session.assignment_id == assignment.id ? 'selected' : '' %>><%= assignment.title %> (Course: <%= assignment.course_title %>)</option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <input type="datetime-local" id="start_time" name="start_time" value="<%= new Date(session.start_time).toISOString().slice(0,16) %>" required>
+    </div>
+    <div class="form-group">
+        <label for="end_time">End Time</label>
+        <input type="datetime-local" id="end_time" name="end_time" value="<%= new Date(session.end_time).toISOString().slice(0,16) %>" required>
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="planned" <%= session.status === 'planned' ? 'selected' : '' %>>Planned</option>
+            <option value="done" <%= session.status === 'done' ? 'selected' : '' %>>Done</option>
+            <option value="skipped" <%= session.status === 'skipped' ? 'selected' : '' %>>Skipped</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes"><%= session.notes || '' %></textarea>
+    </div>
+    <button type="submit">Update Session</button>
+</form>
+
+<form action="/study-sessions/<%= session.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this study session?');">
+    <button type="submit" style="background-color: red; margin-top: 10px;">Delete Session</button>
+</form>

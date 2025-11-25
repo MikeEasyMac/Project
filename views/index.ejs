@@ -1,0 +1,81 @@
+<div class="row g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Users</h6>
+          <div class="display-6"><%= users %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Todos</h6>
+          <div class="display-6"><%= todos %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Upcoming Assignments</h5>
+          <% if (upcomingAssignments && upcomingAssignments.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% upcomingAssignments.forEach(function(assignment) { %>
+                <li class="list-group-item">
+                  <strong><%= assignment.title %></strong> (Due: <%= new Date(assignment.due_date).toLocaleString() %>) - Course: <%= assignment.course_title %>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No upcoming assignments.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Upcoming Study Sessions</h5>
+          <% if (upcomingStudySessions && upcomingStudySessions.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% upcomingStudySessions.forEach(function(session) { %>
+                <li class="list-group-item">
+                  <strong><%= session.title %></strong> (<%= new Date(session.start_time).toLocaleString() %> - <%= new Date(session.end_time).toLocaleString() %>)
+                  <% if (session.assignment_title) { %>
+                    - For: <%= session.assignment_title %>
+                  <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No upcoming study sessions.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4 shadow-sm">
+    <div class="card-body">
+      <form id="todo-form" class="row g-2" method="post" action="/todo">
+        <div class="col-md-10">
+          <input type="text" name="title" class="form-control" placeholder="New todo" required>
+        </div>
+        <div class="col-md-2 d-grid">
+          <button class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ul id="todo-list" class="list-group list-group-flush mt-3">
+    <% items.forEach(function(t) { %>
+      <li class="list-group-item"><%= t.title %></li>
+    <% }); %>
+  </ul>
+
+<script src="/js/main.js"></script>

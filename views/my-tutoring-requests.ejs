@@ -1,0 +1,55 @@
+<h2>My Tutoring Requests</h2>
+<% if (tutoringRequests.length > 0) { %>
+  <ul class="list-group">
+    <% tutoringRequests.forEach(function(request) { %>
+      <li class="list-group-item mb-3">
+        <h4>Request for <%= request.tutor_name %> (Topic: <%= request.topic %>)</h4>
+        <p><strong>Status:</strong> <%= request.status %></p>
+        <p><strong>Details:</strong> <%= request.details %></p>
+        <p><strong>Preferred Times:</strong> <%= request.preferred_time_windows ? JSON.parse(request.preferred_time_windows).map(t => `${t.day} ${t.start}-${t.end}`).join(', ') : 'N/A' %></p>
+        <p><strong>Requested On:</strong> <%= new Date(request.created_at).toLocaleString() %></p>
+
+        <% if (request.status === 'pending') { %>
+          <form action="/tutoring-requests/<%= request.id %>/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel this request?');">
+            <button type="submit" class="btn btn-warning btn-sm">Cancel Request</button>
+          </form>
+        <% } else if (request.status === 'accepted' && !request.session_scheduled) { %>
+          <p class="mt-2">Tutor has accepted. Proposed session time: <strong><%= new Date(request.proposed_start_time).toLocaleString() %> - <%= new Date(request.proposed_end_time).toLocaleString() %></strong></p>
+          <form action="/tutoring-requests/<%= request.id %>/confirm" method="POST" class="d-inline-block me-2">
+            <button type="submit" class="btn btn-success btn-sm">Confirm Session</button>
+          </form>
+          <form action="/tutoring-requests/<%= request.id %>/cancel" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to decline this proposed session and cancel the request?');">
+            <button type="submit" class="btn btn-danger btn-sm">Decline & Cancel</button>
+          </form>
+        <% } %>
+
+        <% if (request.session_scheduled) { %>
+          <h5 class="mt-3">Scheduled Session Details:</h5>
+          <p><strong>Time:</strong> <%= new Date(request.session_start_time).toLocaleString() %> - <%= new Date(request.session_end_time).toLocaleString() %></p>
+          <p><strong>Session Status:</strong> <%= request.session_status %></p>
+          <% if (request.tutor_notes) { %>
+            <p><strong>Tutor Notes:</strong> <%= request.tutor_notes %></p>
+          <% } %>
+          <% if (request.session_status === 'completed' && !request.student_feedback) { %>
+            <h5 class="mt-3">Provide Feedback:</h5>
+            <form action="/tutoring-sessions/<%= request.session_id %>/feedback" method="POST">
+              <div class="form-group">
+                <textarea name="feedback" rows="3" class="form-control" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm mt-2">Submit Feedback</button>
+            </form>
+          <% } else if (request.student_feedback) { %>
+            <p><strong>Your Feedback:</strong> <%= request.student_feedback %></p>
+          <% } %>
+          <% if (request.session_status === 'scheduled') { %>
+            <form action="/tutoring-requests/<%= request.id %>/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel this scheduled session?');">
+              <button type="submit" class="btn btn-danger btn-sm mt-2">Cancel Session</button>
+            </form>
+          <% } %>
+        <% } %>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">You have no tutoring requests yet.</p>
+<% } %>

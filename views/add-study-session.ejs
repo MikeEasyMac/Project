@@ -1,0 +1,29 @@
+<h2>Add New Study Session</h2>
+<form action="/study-sessions" method="POST">
+    <div class="form-group">
+        <label for="title">Session Title</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="assignment_id">Related Assignment (Optional)</label>
+        <select id="assignment_id" name="assignment_id">
+            <option value="">None</option>
+            <% assignments.forEach(assignment => { %>
+                <option value="<%= assignment.id %>"><%= assignment.title %> (Course: <%= assignment.course_title %>)</option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="start_time">Start Time</label>
+        <input type="datetime-local" id="start_time" name="start_time" required>
+    </div>
+    <div class="form-group">
+        <label for="end_time">End Time</label>
+        <input type="datetime-local" id="end_time" name="end_time" required>
+    </div>
+    <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes"></textarea>
+    </div>
+    <button type="submit">Add Session</button>
+</form>

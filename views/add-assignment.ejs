@@ -1,0 +1,24 @@
+<h2>Add New Assignment</h2>
+<form action="/assignments" method="POST">
+    <div class="form-group">
+        <label for="course">Course</label>
+        <select id="course" name="course_id" required>
+            <% courses.forEach(course => { %>
+                <option value="<%= course.id %>"><%= course.title %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="title">Assignment Title</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="due_date">Due Date</label>
+        <input type="datetime-local" id="due_date" name="due_date">
+    </div>
+    <div class="form-group">
+        <label for="effort_estimate">Effort Estimate (minutes)</label>
+        <input type="number" id="effort_estimate" name="effort_estimate" min="0">
+    </div>
+    <button type="submit">Add Assignment</button>
+</form>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Page</title>
+  <link rel="stylesheet" href="/css/loginPage.css" />
+</head>
+<body>
+  <div class="banner">
+    <h1>Campus Copilot</h1>
+  </div>
+  <div class="login-container">
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="flash-message"><%= message %></div>
+    <% } %>
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required />
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+      </div>
+      <p class="forgot-password-text"><a href="/forgot-password">Forgot Password?</a></p>
+      <button type="submit">Login</button>
+      <p class="signup-text">Don’t have an account? <a href="/signup">Sign up</a></p>
+    </form>
+  </div>
+</body>
+</html>
