@@ -1,0 +1,86 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+      <div>
+          <h1 class="fw-bold text-white mb-0">My Study Sessions</h1>
+          <p class="text-white-50">Manage your study time and stay organized.</p>
+      </div>
+      <a href="/study-sessions/add" class="btn btn-light fw-bold text-primary shadow-sm">
+          <i class="fas fa-plus me-2"></i>Plan New Session
+      </a>
+  </div>
+
+  <div class="row justify-content-center">
+      <div class="col-lg-10">
+          <div class="card border-0 shadow-lg">
+              <div class="card-body p-0">
+                  <% if (studySessions.length > 0) { %>
+                      <div class="list-group list-group-flush">
+                          <% studySessions.forEach(function(session) { %>
+                              <div class="list-group-item p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                  
+                                  <div class="mb-3 mb-md-0">
+                                      <div class="d-flex align-items-center mb-1">
+                                          <h5 class="fw-bold text-dark mb-0 me-3"><%= session.title %></h5>
+                                          <% if (session.assignment_title) { %>
+                                              <span class="badge bg-info text-dark rounded-pill">
+                                                  <i class="fas fa-book me-1"></i> <%= session.assignment_title %>
+                                              </span>
+                                          <% } %>
+                                      </div>
+
+                                      <div class="text-muted small mb-2">
+                                          <i class="far fa-calendar-alt me-1"></i> 
+                                          <%= new Date(session.start_time).toLocaleDateString() %>
+                                          <span class="mx-2">|</span>
+                                          <i class="far fa-clock me-1"></i>
+                                          <%= new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %> - 
+                                          <%= new Date(session.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                      </div>
+
+                                      <% if (session.notes) { %>
+                                          <div class="p-2 bg-light rounded text-secondary small d-inline-block">
+                                              <i class="fas fa-sticky-note me-1 text-muted"></i> 
+                                              <em><%= session.notes %></em>
+                                          </div>
+                                      <% } %>
+                                  </div>
+
+                                  <div class="d-flex align-items-center gap-2">
+                                      <form action="/study-sessions/<%= session.id %>/status" method="POST" class="d-flex align-items-center">
+                                          <select name="status" onchange="this.form.submit()" class="form-select form-select-sm fw-bold border-0 
+                                              <%= session.status === 'done' ? 'bg-success text-white' : 
+                                                 (session.status === 'skipped' ? 'bg-secondary text-white' : 'bg-warning text-dark') %>" 
+                                              style="width: 110px; cursor: pointer;">
+                                              <option value="planned" <%= session.status === 'planned' ? 'selected' : '' %>>Planned</option>
+                                              <option value="done" <%= session.status === 'done' ? 'selected' : '' %>>Done</option>
+                                              <option value="skipped" <%= session.status === 'skipped' ? 'selected' : '' %>>Skipped</option>
+                                          </select>
+                                      </form>
+
+                                      <a href="/study-sessions/<%= session.id %>/edit" class="btn btn-outline-primary btn-sm rounded-circle" title="Edit Session">
+                                          <i class="fas fa-pencil-alt"></i>
+                                      </a>
+
+                                      <form action="/study-sessions/<%= session.id %>/delete" method="POST" onsubmit="return confirm('Delete this study session?');">
+                                          <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Delete Session">
+                                              <i class="fas fa-trash"></i>
+                                          </button>
+                                      </form>
+                                  </div>
+
+                              </div>
+                          <% }); %>
+                      </div>
+                  <% } else { %>
+                      <div class="text-center py-5">
+                          <div class="text-muted opacity-25 display-1 mb-3">⏳</div>
+                          <h4 class="text-dark fw-bold">No sessions planned.</h4>
+                          <p class="text-muted">Schedule a time to study and stay on track!</p>
+                          <a href="/study-sessions/add" class="btn btn-primary fw-bold mt-3">Plan First Session</a>
+                      </div>
+                  <% } %>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+project_db.sql
+__MACOSX/
+.DS_Store
+.history/
+.lh/

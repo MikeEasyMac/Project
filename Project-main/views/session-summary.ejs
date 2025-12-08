@@ -1,0 +1,28 @@
+<h2>Session Summary</h2>
+<form action="/tutor/sessions/<%= session.id %>/summary" method="POST">
+    <div class="form-group">
+        <label for="tutor_notes">Tutor Notes</label>
+        <textarea id="tutor_notes" name="tutor_notes" rows="5"><%= session.tutor_notes || '' %></textarea>
+    </div>
+    <div class="form-group">
+        <label for="materials">Materials (e.g., links to shared documents, files - placeholder)</label>
+        <textarea id="materials" name="materials" rows="3" placeholder="Links to materials..."></textarea>
+        <small class="form-text text-muted">File upload functionality is not implemented. Please provide links.</small>
+    </div>
+    <div class="form-group">
+        <label for="status">Session Status</label>
+        <select id="status" name="status">
+            <option value="scheduled" <%= session.status === 'scheduled' ? 'selected' : '' %>>Scheduled</option>
+            <option value="completed" <%= session.status === 'completed' ? 'selected' : '' %>>Completed</option>
+            <option value="cancelled" <%= session.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+        </select>
+    </div>
+    <button type="submit">Save Summary</button>
+</form>
+
+<% if (session.student_feedback) { %>
+    <h4 class="mt-4">Student Feedback:</h4>
+    <p><%= session.student_feedback %></p>
+<% } else { %>
+    <p class="text-muted mt-4">No student feedback yet.</p>
+<% } %>

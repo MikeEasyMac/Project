@@ -1,0 +1,184 @@
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold text-white mb-0">Welcome back, <%= user.name.split(' ')[0] %>! 👋</h1>
+            <p class="lead text-white-50">Here is your Instructor Dashboard.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/resources/publish" class="btn btn-light fw-bold text-primary shadow-sm">
+                <i class="fas fa-upload me-2"></i>Publish Resource
+            </a>
+            <a href="/tutor/availability" class="btn btn-outline-light fw-bold shadow-sm">
+                <i class="fas fa-calendar-alt me-2"></i>Availability
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title fw-bold text-dark mb-4">
+                        <i class="fas fa-clock text-primary me-2"></i>Upcoming Appointments
+                    </h3>
+
+                    <% if (upcomingAppointments && upcomingAppointments.length > 0) { %>
+                        <div class="list-group list-group-flush">
+                            <% upcomingAppointments.forEach(function(appointment) { %>
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="me-3">
+                                            <h5 class="mb-1 text-dark fw-bold"><%= appointment.topic %></h5>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="text-muted">
+                                                    With <strong class="text-dark"><%= appointment.student_name %></strong> 
+                                                    <span class="small text-muted">(<%= appointment.student_email %>)</span>
+                                                </span>
+                                            </div>
+                                            <% if (appointment.details) { %>
+                                                <div class="p-2 bg-light rounded border text-secondary small">
+                                                    <i class="fas fa-comment-alt me-1 text-muted"></i> 
+                                                    <em>"<%= appointment.details %>"</em>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        <div class="text-end" style="min-width: 140px;">
+                                            <span class="badge bg-primary bg-opacity-10 text-primary mb-1">
+                                                <%= new Date(appointment.start_time).toLocaleDateString() %>
+                                            </span>
+                                            <br>
+                                            <small class="text-dark fw-bold">
+                                                <%= new Date(appointment.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %> - 
+                                                <%= new Date(appointment.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4 bg-light rounded">
+                            <p class="text-muted fw-bold mb-0">No upcoming appointments.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="card-title fw-bold text-dark mb-0">
+                            <i class="fas fa-tasks text-primary me-2"></i>My Posted Assignments
+                        </h3>
+                        <a href="/tutor/grading" class="btn btn-sm btn-outline-primary">Go to Grading</a>
+                    </div>
+
+                    <% if (postedAssignments && postedAssignments.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Course</th>
+                                        <th>Due Date</th>
+                                        <th class="text-center">Submissions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% postedAssignments.forEach(function(a) { %>
+                                        <tr>
+                                            <td class="fw-bold text-dark"><%= a.title %></td>
+                                            <td class="text-muted small"><%= a.course_title %></td>
+                                            <td class="text-danger small fw-bold"><%= new Date(a.due_date).toLocaleDateString() %></td>
+                                            <td class="text-center">
+                                                <span class="badge bg-success rounded-pill"><%= a.submission_count %></span>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-3 text-muted">
+                            <small>You haven't posted any assignments yet.</small>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h3 class="card-title fw-bold text-dark mb-4">
+                        <i class="fas fa-pen-fancy text-primary me-2"></i>Assign Homework
+                    </h3>
+                    
+                    <form action="/tutor/create-assignment" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Select Course</label>
+                                <select name="course_id" class="form-select" required>
+                                    <% courses.forEach(function(course) { %>
+                                        <option value="<%= course.id %>"><%= course.title %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Due Date</label>
+                                <input type="datetime-local" name="due_date" class="form-control" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Title</label>
+                                <input type="text" name="title" class="form-control" placeholder="e.g. Chapter 3 Analysis Paper" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Instructions</label>
+                                <textarea name="description" class="form-control" rows="4" placeholder="Type detailed instructions here..." required></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary fw-bold px-4">
+                                    <i class="fas fa-paper-plane me-2"></i>Publish
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <h4 class="text-white fw-bold mb-3">Your Classes</h4>
+            
+            <% if (courses && courses.length > 0) { %>
+                <% courses.forEach(function(course) { %>
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+                            <h5 class="fw-bold text-primary mb-0"><%= course.title %></h5>
+                            <small class="text-muted"><%= course.students ? course.students.length : 0 %> Students Enrolled</small>
+                        </div>
+                        <div class="card-body">
+                            <% if (course.students && course.students.length > 0) { %>
+                                <ul class="list-group list-group-flush">
+                                    <% course.students.forEach(function(student) { %>
+                                        <li class="list-group-item px-0 py-2 d-flex align-items-center">
+                                            <div class="avatar-circle bg-light text-dark fw-bold me-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 12px;">
+                                                <%= student.name.charAt(0) %>
+                                            </div>
+                                            <div class="text-truncate">
+                                                <span class="text-dark fw-bold d-block" style="font-size: 0.9rem;"><%= student.name %></span>
+                                            </div>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            <% } else { %>
+                                <p class="text-muted small fst-italic mb-0">Class list is empty.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="alert alert-info">You are not assigned to any courses.</div>
+            <% } %>
+        </div>
+    </div>
+</div>

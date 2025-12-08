@@ -1,0 +1,67 @@
+<div class="container mt-5">
+    <h1 class="text-white fw-bold mb-4">Grading Dashboard</h1>
+
+    <div class="card border-0 shadow-lg mb-5">
+        <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+            <h4 class="text-dark fw-bold mb-0">Needs Grading</h4>
+        </div>
+        <div class="card-body p-0">
+            <% if (submissions && submissions.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Student</th>
+                                <th>Assignment</th>
+                                <th>Submitted</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% submissions.forEach(function(sub) { %>
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark"><%= sub.student_name %></td>
+                                    <td class="text-dark"><%= sub.title %></td>
+                                    <td class="text-muted"><%= new Date(sub.submitted_at).toLocaleDateString() %></td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-primary btn-sm fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#grade<%= sub.id %>">
+                                            Grade Now
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="collapse bg-light" id="grade<%= sub.id %>">
+                                    <td colspan="4" class="p-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="fw-bold text-dark">Student Submission:</h6>
+                                                <p class="p-2 bg-light border rounded text-dark"><%= sub.submission_text %></p>
+                                                
+                                                <form action="/tutor/assignments/<%= sub.id %>/grade" method="POST" class="mt-3">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-2">
+                                                            <label class="form-label fw-bold text-dark">Grade (0-100)</label>
+                                                            <input type="number" name="grade" class="form-control" min="0" max="100" required>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <label class="form-label fw-bold text-dark">Feedback</label>
+                                                            <input type="text" name="feedback" class="form-control" placeholder="Great job, but check your calculation on #2...">
+                                                        </div>
+                                                        <div class="col-md-2 d-grid align-items-end">
+                                                            <button type="submit" class="btn btn-success fw-bold">Post Grade</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="p-4 text-center text-muted">No pending submissions to grade.</div>
+            <% } %>
+        </div>
+    </div>
+</div>

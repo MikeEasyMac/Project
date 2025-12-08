@@ -1,0 +1,43 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-3">
+                <a href="/qa" class="text-white text-decoration-none"><i class="fas fa-arrow-left me-2"></i>Back to Q&A</a>
+            </div>
+            
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold text-dark mb-4">Ask a Question</h2>
+                    
+                    <form action="/qa/threads" method="POST">
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Question Title</label>
+                            <input type="text" name="title" class="form-control form-control-lg" placeholder="e.g. How do I solve quadratic equations?" required>
+                            <div class="form-text">Be specific and imagine you’re asking a question to another person.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Related Course</label>
+                            <select name="course_id" class="form-select">
+                                <option value="" selected>General / No specific course</option>
+                                <% courses.forEach(function(c) { %>
+                                    <option value="<%= c.id %>"><%= c.title %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Details</label>
+                            <textarea name="content" class="form-control" rows="8" placeholder="Include all the information someone would need to answer your question..." required></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">Post Question</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

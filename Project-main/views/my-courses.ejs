@@ -1,0 +1,86 @@
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold text-white mb-0">My Enrolled Courses</h1>
+            <p class="text-white-50">Manage your classes and assignments.</p>
+        </div>
+        <a href="/courses" class="btn btn-light fw-bold text-primary shadow-sm">
+            <i class="fas fa-plus me-2"></i>Browse New Courses
+        </a>
+    </div>
+
+    <% if (typeof flash !== 'undefined' && flash) { %>
+        <div class="alert alert-<%= flash.type === 'error' ? 'danger' : 'success' %> alert-dismissible fade show shadow-sm" role="alert">
+            <%= flash.message %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <div class="row g-4">
+        <% if (courses && courses.length > 0) { %>
+            <% courses.forEach(function(c) { %>
+                <div class="col-lg-6">
+                    <div class="card h-100 border-0 shadow-lg">
+                        
+                        <div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="badge bg-primary bg-opacity-10 text-primary mb-2"><%= c.code %></span>
+                                <h3 class="fw-bold text-dark mb-0"><%= c.title %></h3>
+                            </div>
+                            
+                            <form action="/courses/<%= c.id %>/withdraw" method="POST" onsubmit="return confirm('Are you sure you want to withdraw from this course?');">
+                                <button class="btn btn-outline-danger btn-sm fw-bold">
+                                    Withdraw
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="card-body px-4 pb-4">
+                            <hr class="text-muted opacity-25 mb-4">
+                            <h5 class="fw-bold text-dark mb-3">
+                                <i class="fas fa-clipboard-list text-primary me-2"></i>Assignments
+                            </h5>
+
+                            <% if (c.assignments && c.assignments.length > 0) { %>
+                                <div class="list-group list-group-flush">
+                                    <% c.assignments.forEach(function(assignment) { %>
+                                        <div class="list-group-item px-0 py-3 border-bottom d-flex justify-content-between align-items-center">
+                                            
+                                            <div>
+                                                <div class="fw-bold text-dark"><%= assignment.title %></div>
+                                                <small class="text-muted">
+                                                    Due: <%= assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No Due Date' %>
+                                                </small>
+                                            </div>
+
+                                            <div>
+                                                <% if (assignment.status === 'completed') { %>
+                                                    <span class="badge bg-success">Submitted</span>
+                                                <% } else { %>
+                                                    <a href="/assignments/<%= assignment.id %>" class="btn btn-primary btn-sm fw-bold">
+                                                        Start
+                                                    </a>
+                                                <% } %>
+                                            </div>
+
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } else { %>
+                                <div class="p-3 bg-light rounded text-center text-muted">
+                                    <small>No assignments posted yet.</small>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12 text-center py-5">
+                <div class="text-white opacity-50 display-1 mb-3">📭</div>
+                <h3 class="text-white">You are not enrolled in any courses.</h3>
+                <p class="text-white-50">Head over to <a href="/courses" class="text-white text-decoration-underline">Available Courses</a> to sign up!</p>
+            </div>
+        <% } %>
+    </div>
+</div>

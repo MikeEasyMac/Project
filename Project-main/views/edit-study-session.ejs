@@ -1,0 +1,68 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a href="/study-sessions" class="text-white text-decoration-none fw-bold">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Sessions
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold text-dark mb-4">Edit Study Session</h2>
+
+                    <form action="/study-sessions/<%= session.id %>" method="POST">
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Session Title</label>
+                            <input type="text" name="title" class="form-control" value="<%= session.title %>" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Related Assignment</label>
+                            <select name="assignment_id" class="form-select">
+                                <option value="" <%= !session.assignment_id ? 'selected' : '' %>>None / General</option>
+                                <% if (assignments && assignments.length > 0) { %>
+                                    <% assignments.forEach(function(a) { %>
+                                        <option value="<%= a.id %>" <%= session.assignment_id === a.id ? 'selected' : '' %>><%= a.title %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Start Time</label>
+                                <% 
+                                  const start = new Date(session.start_time);
+                                  start.setMinutes(start.getMinutes() - start.getTimezoneOffset());
+                                  const startStr = start.toISOString().slice(0, 16);
+                                %>
+                                <input type="datetime-local" name="start_time" class="form-control" value="<%= startStr %>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">End Time</label>
+                                <% 
+                                  const end = new Date(session.end_time);
+                                  end.setMinutes(end.getMinutes() - end.getTimezoneOffset());
+                                  const endStr = end.toISOString().slice(0, 16);
+                                %>
+                                <input type="datetime-local" name="end_time" class="form-control" value="<%= endStr %>" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Notes</label>
+                            <textarea name="notes" class="form-control" rows="3"><%= session.notes %></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary fw-bold">Update Session</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

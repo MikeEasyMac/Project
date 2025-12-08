@@ -1,0 +1,69 @@
+<div class="container mt-5">
+  <div class="row mb-4 align-items-center">
+      <div class="col-md-8">
+          <h1 class="fw-bold text-white mb-0">Browse Tutors</h1>
+          <p class="text-white-50">Find the perfect expert for your academic needs.</p>
+      </div>
+  </div>
+
+  <div class="row g-4">
+      <% if (tutors && tutors.length > 0) { %>
+          <% tutors.forEach(function(tutor) { %>
+              <div class="col-md-6 col-lg-4">
+                  <div class="card h-100 border-0 shadow-lg hover-shadow transition-all">
+                      <div class="card-body p-4 d-flex flex-column">
+                          
+                          <div class="d-flex justify-content-between align-items-start mb-3">
+                              <div class="d-flex align-items-center">
+                                  <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                      <%= tutor.name.charAt(0) %>
+                                  </div>
+                                  <div>
+                                      <h5 class="fw-bold text-dark mb-0"><%= tutor.name %></h5>
+                                      
+                                      <span class="badge bg-info text-dark mt-1">
+                                          <% 
+                                              let displaySubject = 'General';
+                                              if (tutor.subjects) {
+                                                  try {
+                                                      // Try to parse ["Math"] -> Math
+                                                      displaySubject = JSON.parse(tutor.subjects).join(', ');
+                                                  } catch (e) {
+                                                      // If plain text, just strip brackets/quotes
+                                                      displaySubject = tutor.subjects.replace(/[\[\]"]/g, '');
+                                                  }
+                                              }
+                                          %>
+                                          <%= displaySubject %>
+                                      </span>
+                                  </div>
+                              </div>
+                              <div class="text-end">
+                                  <h4 class="text-success fw-bold mb-0">$<%= tutor.hourly_rate || '0' %></h4>
+                                  <small class="text-muted">/hr</small>
+                              </div>
+                          </div>
+
+                          <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size: 0.95rem; line-height: 1.6;">
+                              <%= tutor.bio || "No bio available." %>
+                          </p>
+
+                          <div class="mt-auto pt-3 border-top">
+                              <a href="/tutors/<%= tutor.id %>/request" class="btn btn-outline-primary w-100 fw-bold">
+                                  Request Session
+                              </a>
+                          </div>
+
+                      </div>
+                  </div>
+              </div>
+          <% }); %>
+      <% } else { %>
+          <div class="col-12 text-center py-5">
+              <div class="text-white opacity-50 display-1 mb-3">👨‍🏫</div>
+              <h3 class="text-white">No tutors available right now.</h3>
+              <p class="text-white-50">Please check back later.</p>
+          </div>
+      <% } %>
+  </div>
+</div>

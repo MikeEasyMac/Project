@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Campus CoPilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+    </style>
+  </head>
+  <body class="d-flex align-items-center justify-content-center vh-100">
+    
+    <div class="card border-0" style="width: 100%; max-width: 400px;">
+        <div class="card-body p-5">
+            <h2 class="fw-bold text-dark text-center mb-4">Welcome Back</h2>
+            
+            <script>
+                const urlParams = new URLSearchParams(window.location.search);
+                if(urlParams.get('error') === 'suspended') {
+                    document.write('<div class="alert alert-danger text-center small">Your account has been suspended.</div>');
+                } else if(urlParams.get('error') === 'invalid') {
+                    document.write('<div class="alert alert-danger text-center small">Invalid email or password.</div>');
+                }
+            </script>
+
+            <form action="/login" method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-dark">Email Address</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">Password</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold">Login</button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="small text-muted mb-0">Don't have an account?</p>
+                <a href="/signup" class="text-decoration-none fw-bold">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+  </body>
+</html>

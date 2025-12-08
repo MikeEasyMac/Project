@@ -1,0 +1,56 @@
+<div class="container mt-5">
+    <h1 class="text-white fw-bold mb-4">My Assignments</h1>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h4 class="text-white mb-3">To Do</h4>
+            <% if (pending && pending.length > 0) { %>
+                <% pending.forEach(function(a) { %>
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-dark"><%= a.title %></h5>
+                            <p class="small text-muted mb-2"><%= a.course_title %></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-warning text-dark">Due: <%= new Date(a.due_date).toLocaleDateString() %></span>
+                                <a href="/assignments/<%= a.id %>" class="btn btn-primary btn-sm fw-bold">Start Assignment</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="card bg-transparent border-white border-opacity-25 text-white">
+                    <div class="card-body text-center">🎉 No pending work!</div>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="text-white mb-3">Submitted & Graded</h4>
+            <% if (completed && completed.length > 0) { %>
+                <% completed.forEach(function(a) { %>
+                    <div class="card mb-3 border-0 shadow-sm" style="background: rgba(255,255,255,0.9);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title fw-bold text-dark"><%= a.title %></h5>
+                                <% if (a.grade !== null) { %>
+                                    <span class="badge bg-success fs-6"><%= a.grade %>/100</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">Pending Grade</span>
+                                <% } %>
+                            </div>
+                            <p class="small text-muted mb-2"><%= a.course_title %></p>
+                            
+                            <% if (a.tutor_feedback) { %>
+                                <div class="alert alert-info mt-2 mb-0 py-2 small">
+                                    <strong>Feedback:</strong> <%= a.tutor_feedback %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="text-white-50">No completed assignments yet.</p>
+            <% } %>
+        </div>
+    </div>
+</div>

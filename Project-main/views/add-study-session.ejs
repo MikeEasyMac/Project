@@ -1,0 +1,80 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a href="/study-sessions" class="text-white text-decoration-none fw-bold">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Sessions
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-lg mb-5">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="fas fa-edit text-primary me-2"></i>Manual Entry
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/study-sessions" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Session Title</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Review Calculus Chapter 4" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Start Time</label>
+                                <input type="datetime-local" name="start_time" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">End Time</label>
+                                <input type="datetime-local" name="end_time" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-primary fw-bold">Save Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-lg" style="background: linear-gradient(145deg, #ffffff, #f0f8ff);">
+                <div class="card-header bg-transparent border-bottom-0 pt-4 px-4">
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="fas fa-magic text-warning me-2"></i>Auto-Generate Study Plan
+                    </h4>
+                    <p class="text-muted small">Select an assignment, and we'll break the work into 1-hour blocks for you.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/study-sessions/generate" method="POST">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Select Assignment</label>
+                            <select name="assignment_id" class="form-select" required>
+                                <option value="" disabled selected>Choose an assignment...</option>
+                                <% if (assignments && assignments.length > 0) { %>
+                                    <% assignments.forEach(function(assignment) { %>
+                                        <option value="<%= assignment.id %>"><%= assignment.title %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Total Hours Needed</label>
+                            <input type="number" name="total_hours" class="form-control" min="1" max="20" placeholder="e.g. 5" required>
+                            <div class="form-text">We will create separate 1-hour sessions leading up to the due date.</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning text-dark fw-bold shadow-sm">
+                                <i class="fas fa-robot me-2"></i>Generate Plan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

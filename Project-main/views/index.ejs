@@ -1,0 +1,124 @@
+<div class="text-white mb-5 mt-3">
+  <h1 class="display-5 fw-bold">Welcome back, <%= user.name.split(' ')[0] %>! 👋</h1>
+  <p class="lead opacity-75">Here is your personal study overview.</p>
+</div>
+
+<div class="row g-4 mb-5">
+  <div class="col-md-6">
+    <div class="card p-3 border-0">
+      <div class="card-body d-flex align-items-center">
+          <div class="fs-1 text-success me-3"></div>
+          <div>
+              <h6 class="text-muted mb-0">Active Todos</h6>
+              <h2 class="mb-0" id="active-todo-count"><%= todos %></h2>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+      <div class="card p-3 border-0">
+        <div class="card-body d-flex align-items-center">
+            <div class="fs-1 text-warning me-3">📚</div>
+            <div>
+                <h6 class="text-muted mb-0">Pending Assignments</h6>
+                <h2 class="mb-0"><%= upcomingAssignments.filter(a => a.status === 'pending').length %></h2>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+      <div class="card mb-4">
+          <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center pt-4 px-4">
+              <h4 class="mb-0">Recent Assignments</h4>
+              <a href="/my-assignments" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body p-0">
+              <% if (upcomingAssignments && upcomingAssignments.length > 0) { %>
+                  <div class="list-group list-group-flush">
+                    <% upcomingAssignments.forEach(function(assignment) { %>
+                      <a href="/assignments/<%= assignment.id %>" class="list-group-item list-group-item-action px-4 py-3">
+                          <div class="d-flex w-100 justify-content-between">
+                              <h6 class="mb-1 fw-bold text-dark">
+                                  <%= assignment.title %>
+                                  <% if(assignment.status === 'completed') { %>
+                                      <span class="badge bg-success ms-2" style="font-size: 0.6rem;">DONE</span>
+                                  <% } %>
+                              </h6>
+                              <small class="text-danger fw-bold">Due: <%= new Date(assignment.due_date).toLocaleDateString() %></small>
+                          </div>
+                          <small class="text-muted"><i class="fas fa-book me-1"></i> <%= assignment.course_title %></small>
+                      </a>
+                    <% }); %>
+                  </div>
+                <% } else { %>
+                  <div class="p-4 text-center text-muted">
+                      <p>🎉 No assignments found.</p>
+                  </div>
+                <% } %>
+          </div>
+      </div>
+
+      <div class="card">
+          <div class="card-header bg-transparent border-0 pt-4 px-4">
+              <h4 class="mb-0">Quick Todo List</h4>
+          </div>
+          <div class="card-body px-4">
+              <form id="todo-form" class="row g-2 mb-4">
+                  <div class="col-md-9">
+                    <input type="text" name="title" class="form-control" placeholder="Add a new task..." required>
+                  </div>
+                  <div class="col-md-3 d-grid">
+                    <button class="btn btn-primary">Add Task</button>
+                  </div>
+              </form>
+
+              <ul id="todo-list" class="list-group list-group-flush">
+                  <% items.forEach(function(item) { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center ps-0">
+                      <div class="d-flex align-items-center">
+                          <form action="/todo/<%= item.id %>/toggle" method="post" class="me-3">
+                              <button type="submit" class="btn btn-sm <%= item.done ? 'btn-success' : 'btn-outline-secondary' %> rounded-circle" style="width: 30px; height: 30px; padding: 0;">✓</button>
+                          </form>
+                          <span class="<%= item.done ? 'text-decoration-line-through text-muted' : 'fw-semibold' %>"><%= item.title %></span>
+                      </div>
+                      <form action="/todo/<%= item.id %>/delete" method="post" onsubmit="return confirm('Delete?');">
+                          <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none"><i class="fas fa-trash"></i> Delete</button>
+                      </form>
+                    </li>
+                  <% }); %>
+              </ul>
+          </div>
+      </div>
+  </div>
+
+  <div class="col-lg-4">
+      <div class="card h-100">
+          <div class="card-header bg-transparent border-0 pt-4 px-4">
+              <h5 class="mb-0">Study Sessions</h5>
+          </div>
+          <div class="card-body">
+              <% if (upcomingStudySessions && upcomingStudySessions.length > 0) { %>
+                  <div class="timeline">
+                    <% upcomingStudySessions.forEach(function(session) { %>
+                      <div class="mb-3 p-3 bg-light rounded-3 border-start border-4 border-primary">
+                          <h6 class="fw-bold mb-1"><%= session.title %></h6>
+                          <div class="small text-muted mb-2">
+                              <%= new Date(session.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                          </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                <% } else { %>
+                  <p class="text-muted text-center mt-4">No sessions planned.</p>
+                  <div class="d-grid mt-3">
+                      <a href="/study-sessions/add" class="btn btn-outline-primary btn-sm">Plan a Session</a>
+                  </div>
+                <% } %>
+          </div>
+      </div>
+  </div>
+</div>

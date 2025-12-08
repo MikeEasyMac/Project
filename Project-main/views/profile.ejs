@@ -1,0 +1,58 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center p-4">
+                <div class="mb-3">
+                    <% if (user.avatar) { %>
+                        <img src="<%= user.avatar %>" alt="Profile" class="profile-avatar-lg">
+                    <% } else { %>
+                        <img src="https://ui-avatars.com/api/?name=<%= user.name %>&background=random&size=128" alt="Profile" class="profile-avatar-lg">
+                    <% } %>
+                </div>
+                <h4 class="mb-1"><%= user.name %></h4>
+                <p class="text-muted"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></p>
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-outline-primary btn-sm">Change Password</button>
+                </div>
+            </div>
+            
+            <div class="card mt-3 p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Member Since</span>
+                    <span class="fw-bold"><%= new Date(user.created_at).toLocaleDateString() %></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h3 class="mb-4 text-primary-custom">Edit Profile</h3>
+                <form action="/profile" method="POST">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="fullname" class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" value="<%= user.name %>" required>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="email" class="form-label fw-bold">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" disabled style="background-color: #f8f9fa;">
+                            <small class="text-muted">Email cannot be changed.</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="avatar" class="form-label fw-bold">Avatar Image URL</label>
+                            <input type="text" class="form-control" id="avatar" name="avatar" value="<%= user.avatar || '' %>" placeholder="https://example.com/my-image.jpg">
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary px-5">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
